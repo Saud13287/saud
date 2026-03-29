@@ -56,15 +56,15 @@ export default function SettingsPage() {
               <span className="text-sm font-bold text-emerald-400">${settings.accountBalance.toLocaleString()}</span>
             </div>
             <input
-              type="range" min="1000" max="1000000" step="1000"
+              type="range" min="100" max="1000000" step="100"
               value={settings.accountBalance}
               onChange={(e) => updateSettings({ accountBalance: Number(e.target.value) })}
               className="w-full accent-emerald-500"
             />
             <div className="flex gap-2 mt-1">
-              {[10000, 50000, 100000, 500000].map((v) => (
+              {[100, 500, 1000, 5000, 10000, 50000, 100000, 500000].map((v) => (
                 <button key={v} onClick={() => updateSettings({ accountBalance: v })} className="text-[9px] bg-[var(--color-omega-surface)] px-2 py-0.5 rounded hover:bg-emerald-900/30">
-                  ${(v/1000)}K
+                  ${v >= 1000 ? `${(v/1000)}K` : v}
                 </button>
               ))}
             </div>
