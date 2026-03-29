@@ -1,12 +1,12 @@
 # السياق النشط: نظام سعود للذكاء المالي v7.0
 
 ## الحالة الحالية
-**الحالة**: ✅ جاهز للإنتاج - v7.0 مع أسعار حقيقية وإشعارات ومراقبة 24/7
+**الحالة**: ✅ جاهز للإنتاج - v8.0 مع 20 وسيط إماراتي وحالة أسواق
 
 ## الهوية
 - **الاسم**: سعود (Saud Financial Intelligence)
 - **الشعار**: حرف "S" أخضر زمردي
-- **الإصدار**: 7.0
+- **الإصدار**: 8.0
 
 ## الصفحات (7 صفحات)
 | الصفحة | الرابط | الوصف |
@@ -47,6 +47,36 @@
 - تحذير عند تغير سعر أكثر من 3%
 - جرس إشعارات في الرأس مع عداد
 
+## حالة الأسواق
+- شريط حالة مدمج في الرأس (Header) - تحديث كل 60 ثانية
+- بانل كامل في لوحة التحكم - 5 أسواق (فوركس، أسهم، كريبتو، سلع، مؤشرات)
+- تحذير في التداول الآلي عند إغلاق الأسواق التقليدية
+- منطق الإغلاق: форكس (Fri 17:00 ET - Sun 17:00 ET), أسهم (Mon-Fri 9:30-16:00 ET), كريبتو (24/7)
+
+## الوسطاء المعتمدون في الإمارات (20 وسيط)
+| الوسيط | الترخيص | الموقع |
+|--------|---------|--------|
+| ADSS (إيه دي إس) | SCA, CBUAE | أبوظبي |
+| SHUAA Capital | SCA, DFM | دبي |
+| Emirates NBD Securities | SCA, DFM, ADX | دبي |
+| ADCB Securities | SCA, ADX | أبوظبي |
+| MultiBank Group | DFSA, ASIC, CySEC | دبي |
+| Equiti Securities | DFSA, CMA | دبي |
+| Century Financial | SCA | دبي |
+| Saxo Bank | DFSA, FSA, FINMA | دبي (DIFC) |
+| IG Markets | DFSA, FCA, ASIC | دبي (DIFC) |
+| CMC Markets | DFSA, FCA, ASIC | دبي (DIFC) |
+| XTB | DFSA, FCA, CySEC | دبي |
+| Pepperstone | DFSA, ASIC, FCA, CySEC | دبي |
+| AvaTrade | ADGM, ASIC, CBI, CySEC | أبوظبي (ADGM) |
+| HF Markets (HotForex) | DFSA, FCA, CySEC, FSCA | دبي |
+| FXCM | DFSA, FCA, ASIC, CySEC | دبي |
+| eToro | FCA, CySEC, ASIC, FinCEN | متاح في الإمارات |
+| Swissquote | FINMA, DFSA, FCA | دبي (DIFC) |
+| Al Ansari Exchange | SCA, CBUAE | دبي |
+| Interactive Brokers (ADGM) | ADGM, SEC, FCA, CBI | أبوظبي (ADGM) |
+| TradeStation International | FCA, SIPC | متاح في الإمارات |
+
 ## الإعدادات المُطبقة
 - رصيد الحساب: $100 - $1,000,000 (افتراضي $1,000)
 - المخاطرة/صفقة: 0.5% - 10%
@@ -68,6 +98,7 @@
 | 2026-03-29 | v5.0 | التداول الآلي, API أسعار, إعدادات لغة/جوال |
 | 2026-03-29 | v6.0 | ساعات السوق, محفظة, رصيد, فترة هدوء |
 | 2026-03-29 | v7.0 | أسعار حقيقية (CoinGecko+Forex), إشعارات, 96% دقة, مراقبة 24/7 |
+| 2026-03-29 | v8.0 | شريط حالة الأسواق, 20 وسيط إماراتي معتمد, تحذير إغلاق الأسواق |
 
 ## المشاكل المعروفة والحلول
 | المشكلة | السبب | الحل |

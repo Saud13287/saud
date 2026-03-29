@@ -187,7 +187,12 @@ export default function AutoTradingPage() {
     crypto: getMarketStatus("BTCUSD"),
     stocks: getMarketStatus("SPX500"),
     gold: getMarketStatus("XAUUSD"),
+    commodities: getMarketStatus("XAUUSD"),
+    indices: getMarketStatus("SPX500"),
   }), []);
+
+  const anyMarketOpen = marketStatuses.forex.isOpen || marketStatuses.stocks.isOpen || marketStatuses.gold.isOpen;
+  const allTraditionalClosed = !marketStatuses.forex.isOpen && !marketStatuses.stocks.isOpen && !marketStatuses.gold.isOpen;
 
   return (
     <div className="space-y-4">
@@ -201,6 +206,8 @@ export default function AutoTradingPage() {
             <div className={`w-2 h-2 rounded-full ${marketStatuses.forex.isOpen ? "bg-emerald-400" : "bg-red-400"}`} />فوركس
             <div className={`w-2 h-2 rounded-full ${marketStatuses.stocks.isOpen ? "bg-emerald-400" : "bg-red-400"}`} />أسهم
             <div className="w-2 h-2 rounded-full bg-emerald-400" />كريبتو
+            <div className={`w-2 h-2 rounded-full ${marketStatuses.gold.isOpen ? "bg-emerald-400" : "bg-red-400"}`} />ذهب
+            <div className={`w-2 h-2 rounded-full ${marketStatuses.indices.isOpen ? "bg-emerald-400" : "bg-red-400"}`} />مؤشرات
           </div>
           <button onClick={toggleActive} disabled={cooldownActive} className={`px-5 py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50 ${isActive ? "bg-red-600 hover:bg-red-700 text-white" : "bg-emerald-600 hover:bg-emerald-700 text-white"}`}>
             {cooldownActive ? "⏳ هدوء" : isActive ? "⏸ إيقاف" : "▶️ تفعيل"}
@@ -212,6 +219,16 @@ export default function AutoTradingPage() {
         <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-3 flex items-center gap-2">
           <span className="text-amber-400">⏳</span>
           <p className="text-xs text-amber-300">فترة هدوء نشطة بسبب {settings.maxConsecutiveLosses} خسائر متتالية. استمرار بعد {settings.cooldownAfterLoss} ساعة.</p>
+        </div>
+      )}
+
+      {allTraditionalClosed && !cooldownActive && (
+        <div className="bg-red-900/20 border border-red-700/30 rounded-xl p-3 flex items-center gap-2">
+          <span className="text-red-400">🚫</span>
+          <div>
+            <p className="text-xs text-red-300 font-bold">الأسواق التقليدية مغلقة</p>
+            <p className="text-[10px] text-red-300/70">الفوركس، الأسهم، الذهب، والمؤشرات مغلقة حالياً. العملات الرقمية متاحة 24/7 فقط.</p>
+          </div>
         </div>
       )}
 
