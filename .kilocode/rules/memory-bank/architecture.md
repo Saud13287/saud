@@ -1,120 +1,83 @@
-# System Patterns: Next.js Starter Template
+# البنية المعمارية: نظام سعود
 
-## Architecture Overview
-
+## هيكل المشروع
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx          # Root layout + metadata
-│   ├── page.tsx            # Home page
-│   ├── globals.css         # Tailwind imports + global styles
-│   └── favicon.ico         # Site icon
-└── (expand as needed)
-    ├── components/         # React components (add when needed)
-    ├── lib/                # Utilities and helpers (add when needed)
-    └── db/                 # Database files (add via recipe)
+├── app/                          # صفحات Next.js App Router
+│   ├── layout.tsx                # التخطيط الرئيسي (RTL, Sidebar, Header)
+│   ├── page.tsx                  # لوحة التحكم (TradingView, أسعار, محفظة, خبراء)
+│   ├── globals.css               # أنماط عالمية (ثيم داكن, RTL)
+│   ├── market/page.tsx           # السوق (TradingView كامل, فلترة, قائمة أصول)
+│   ├── portfolio/page.tsx        # المحفظة (رصيد, منحنى أموال, مراكز)
+│   ├── auto-trading/page.tsx     # التداول الآلي (تفعيل, صفقات, سجل)
+│   ├── war-room/page.tsx         # غرفة الحرب (الاستدعاء يمر عبر page)
+│   ├── reports/page.tsx          # التقارير (دقة, أوزان)
+│   ├── settings/page.tsx         # الإعدادات (20+ خيار)
+│   └── api/
+│       ├── agents/route.ts       # API الاستشارة
+│       ├── prices/route.ts       # API الأسعار (CoinGecko + Forex)
+│       ├── reports/route.ts      # API التقارير
+│       └── market/route.ts       # API السوق
+├── components/
+│   ├── layout/
+│   │   ├── Sidebar.tsx           # الشريط الجانبي (7 روابط + إحصائيات)
+│   │   └── Header.tsx            # الرأس (ساعة, إشعارات, شريط TradingView)
+│   ├── dashboard/
+│   │   ├── ExpertBoard.tsx       # مجلس الخبراء (8 بطاقات + modal)
+│   │   ├── SystemHealthPanel.tsx # حالة النظام
+│   │   └── WarRoomView.tsx       # غرفة الحرب (استشارة, تنفيذ, أصوات)
+│   ├── charts/
+│   │   ├── LineChart.tsx         # رسم بياني Canvas
+│   │   └── CandlestickChart.tsx  # شموع يابانية Canvas
+│   ├── tradingview/
+│   │   ├── TradingViewWidget.tsx # TradingView رسم بياني تفاعلي
+│   │   ├── MarketOverview.tsx    # نظرة على السوق
+│   │   └── TickerTape.tsx        # شريط أسعار متحرك
+│   └── notifications/
+│       └── NotificationCenter.tsx # نظام الإشعارات 24/7
+├── hooks/
+│   └── useSettings.ts            # إعدادات مع localStorage (v2)
+├── lib/
+│   ├── agents/
+│   │   ├── types.ts              # تعريفات TypeScript
+│   │   ├── registry.ts           # 59 خبير (8 رئيسي + 51 مساعد)
+│   │   ├── engine.ts             # محرك الاستشارة (بذرة عشوائية)
+│   │   └── learning.ts           # محرك التعلم الذاتي
+│   ├── analysis/
+│   │   ├── technical.ts          # تحليل فني (RSI, MACD, BB, SMA, ATR, Stochastic)
+│   │   ├── fundamental.ts        # تحليل مالي (P/E, P/B, ROE, DCF)
+│   │   ├── sentiment.ts          # تحليل مشاعر (عربي + إنجليزي)
+│   │   ├── risk.ts               # إدارة مخاطر (Kelly, Position Sizing)
+│   │   ├── patterns.ts           # كشف أنماط (H&S, Double Top, Triangles)
+│   │   └── backtest.ts           # اختبار استراتيجيات
+│   ├── strategies/
+│   │   └── advanced.ts           # استراتيجيات (Ichimoku, Fibonacci, SMC, VWAP, Elliott, Market Profile)
+│   ├── market/
+│   │   └── realtime.ts           # جلب أسعار من API الخادم
+│   ├── knowledge/
+│   │   └── base.ts               # قاعدة معرفة
+│   ├── db/
+│   │   └── store.ts              # تخزين مؤقت للصفقات والجلسات
+│   └── utils/
+│       └── market-hours.ts       # كشف ساعات التداول
 ```
 
-## Key Design Patterns
+## نمط البيانات
+- **الأسعار**: `/api/prices` ← CoinGecko (كريبتو) + open.er-api (فوركس) + خوارزمية (سلع/مؤشرات)
+- **الاستشارة**: POST `/api/agents` ← محرك الاستشارة ← 6 خبراء رئيسيين
+- **الإعدادات**: `useSettings()` ← localStorage `saud-fin-v2`
 
-### 1. App Router Pattern
+## نمط الحالة
+- `useState` للحالة المحلية
+- `useSettings()` hook للإعدادات المُشتركة
+- `localStorage` للاستمرارية
+- `useMemo` للحسابات المُشتقة
+- `useCallback` للدوال المستقرة
+- refs للقيم غير التفاعلية (logs, counters)
 
-Uses Next.js App Router with file-based routing:
-```
-src/app/
-├── page.tsx           # Route: /
-├── about/page.tsx     # Route: /about
-├── blog/
-│   ├── page.tsx       # Route: /blog
-│   └── [slug]/page.tsx # Route: /blog/:slug
-└── api/
-    └── route.ts       # API Route: /api
-```
-
-### 2. Component Organization Pattern (When Expanding)
-
-```
-src/components/
-├── ui/                # Reusable UI components (Button, Card, etc.)
-├── layout/            # Layout components (Header, Footer)
-├── sections/          # Page sections (Hero, Features, etc.)
-└── forms/             # Form components
-```
-
-### 3. Server Components by Default
-
-All components are Server Components unless marked with `"use client"`:
-```tsx
-// Server Component (default) - can fetch data, access DB
-export default function Page() {
-  return <div>Server rendered</div>;
-}
-
-// Client Component - for interactivity
-"use client";
-export default function Counter() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
-}
-```
-
-### 4. Layout Pattern
-
-Layouts wrap pages and can be nested:
-```tsx
-// src/app/layout.tsx - Root layout
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
-
-// src/app/dashboard/layout.tsx - Nested layout
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex">
-      <Sidebar />
-      <main>{children}</main>
-    </div>
-  );
-}
-```
-
-## Styling Conventions
-
-### Tailwind CSS Usage
-- Utility classes directly on elements
-- Component composition for repeated patterns
-- Responsive: `sm:`, `md:`, `lg:`, `xl:`
-
-### Common Patterns
-```tsx
-// Container
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-// Responsive grid
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-// Flexbox centering
-<div className="flex items-center justify-center">
-```
-
-## File Naming Conventions
-
-- Components: PascalCase (`Button.tsx`, `Header.tsx`)
-- Utilities: camelCase (`utils.ts`, `helpers.ts`)
-- Pages/Routes: lowercase (`page.tsx`, `layout.tsx`)
-- Directories: kebab-case (`api-routes/`) or lowercase (`components/`)
-
-## State Management
-
-For simple needs:
-- `useState` for local component state
-- `useContext` for shared state
-- Server Components for data fetching
-
-For complex needs (add when necessary):
-- Zustand for client state
-- React Query for server state
+## أنماط التصميم
+- **RTL**: `direction: rtl` على `<html>`
+- **ثيم داكن**: متغيرات CSS `--color-omega-*`
+- **لون أساسي**: أخضر زمردي (emerald)
+- **بطاقات**: `bg-[var(--color-omega-card)]` مع حدود
+- **حالة**: `status-dot` مع ألوان (أخضر/أحمر/أصفر)

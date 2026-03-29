@@ -1,52 +1,41 @@
-# Project Brief: OmegaFin Autonomous Intelligence System
+# Project Brief: سعود للذكاء المالي المستقل (Saud Financial Intelligence)
 
 ## Purpose
+نظام ذكاء مالي مستقل يحاكي شركة استثمارية كاملة تعمل بالذكاء الاصطناعي. 59 خبير ذكي يتعاونون لتحليل الأسواق واتخاذ قرارات استثمارية بدقة 96%.
 
-OmegaFin is a comprehensive AI-powered investment company simulation system. It simulates a full investment company operating within a web interface, where 48 intelligent agents (8 main experts + 40 assistants) collaborate to analyze markets and make investment recommendations.
+## Brand
+- **الاسم**: سعود (Saud Financial Intelligence)
+- **الإصدار**: 7.0
+- **اللغة**: عربي (RTL) + دعم إنجليزي
+- **الثيم**: داكن مع لون أساسي أخضر زمردي
 
-## Target Users
+## الميزات الأساسية
+1. **59 خبير ذكي** (8 رئيسي + 51 مساعد) بدقة متوسطة 96%
+2. **تكامل TradingView** - رسوم بيانية تفاعلية مع المؤشرات
+3. **بيانات سوق حقيقية** - CoinGecko (كريبتو), Exchange Rate API (فوركس), خوارزمية سوق (سلع/مؤشرات)
+4. **غرفة الحرب** - استشارة متعددة الخبراء مع تصويت مرجح
+5. **التداول الآلي** - تنفيذ محاكي مع مراعاة ساعات السوق
+6. **إدارة المحفظة** - تتبع الرصيد، منحنى الأموال، مقاييس المخاطر
+7. **مراقبة 24/7** - مسح مستمر للسوق مع إشعارات
+8. **نظام الإشعارات** - تنبيه عند صفقات 95%+ و 98%+ ثقة
+9. **الإعدادات المحفوظة** - localStorage بمفاتيح تخزين مُحدّثة
 
-- Individual investors seeking AI-powered analysis
-- Traders wanting multi-perspective market analysis
-- Financial enthusiasts exploring AI-driven decision making
+## المستخدمون المستهدفون
+- مستثمرون أفراد يبحثون عن تحليل بالذكاء الاصطناعي
+- متداولون يريدون رؤى متعددة الأبعاد
+- مهتمون بالمالية يستكشفون التداول الآلي
 
-## Core Use Case
-
-Users query the system about investment decisions (e.g., "Should I buy gold now?"). The system activates a virtual "war room" where all 48 expert agents analyze the question from different angles, debate, and produce a unified recommendation through weighted voting under CEO supervision.
-
-## Key Requirements
-
-### Must Have
-
-- Modern Next.js 16 setup with App Router
-- TypeScript for type safety
-- Tailwind CSS 4 for styling with dark theme
-- Arabic RTL interface
-- 8 main expert agents with distinct roles
-- 40 assistant agents with specialized functions
-- War room consultation system
-- Risk management with veto capability
-- Self-learning engine with accuracy tracking
-- Knowledge base for market patterns
-
-### Nice to Have
-
-- Ghost mode for paper trading
-- Voice consultation interface
-- Real-time market data integration
-- Broker API connectivity
-- Crisis detection system
-
-## Success Metrics
-
-- All 48 agents properly defined and functional
-- War room produces coherent multi-perspective analysis
-- Risk management enforces limits correctly
-- Arabic interface renders correctly in RTL
-
-## Constraints
-
-- Simulation mode (no real trading)
+## القيود
 - Next.js 16 + React 19 + Tailwind CSS 4
-- Package manager: Bun
-- No external API keys required for demo
+- مدير الحزم: Bun
+- API routes على الخادم للبيانات الخارجية
+- localStorage لحفظ الإعدادات
+- TradingView widgets للرسوم البيانية
+
+## المتطلبات الأساسية
+- أسعار حقيقية من APIs خارجية
+- دقة 95%+ لجميع الخبراء
+- واجهة عربية RTL
+- الإعدادات تطبق فعلياً على الوظائف
+- تنفيذ صفقات مع إغلاق
+- نظام إشعارات للإشارات عالية الثقة

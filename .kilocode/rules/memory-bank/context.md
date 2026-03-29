@@ -1,48 +1,79 @@
-# Active Context: Saud Financial Intelligence System v5.0
+# السياق النشط: نظام سعود للذكاء المالي v7.0
 
-## Current State
+## الحالة الحالية
+**الحالة**: ✅ جاهز للإنتاج - v7.0 مع أسعار حقيقية وإشعارات ومراقبة 24/7
 
-**Status**: ✅ Production Ready - Saud v5.0 with Auto-Trading & Real Price API
+## الهوية
+- **الاسم**: سعود (Saud Financial Intelligence)
+- **الشعار**: حرف "S" أخضر زمردي
+- **الإصدار**: 7.0
 
-## Brand
-- **Name**: سعود (Saud Financial Intelligence)
-- **Version**: 5.0
+## الصفحات (7 صفحات)
+| الصفحة | الرابط | الوصف |
+|--------|--------|-------|
+| لوحة التحكم | `/` | TradingView, أسعار مباشرة, محفظة, خبراء |
+| السوق | `/market` | TradingView كامل, فلترة فئات, قائمة أصول |
+| المحفظة | `/portfolio` | رأس المال, منحنى أموال, مراكز مفتوحة |
+| التداول الآلي | `/auto-trading` | تفعيل/إيقاف, صفقات, سجل, إحصائيات |
+| غرفة الحرب | `/war-room` | استشارة, تنفيذ صفقات, أصوات خبراء |
+| التقارير | `/reports` | دقة الخبراء, توزيع الأوزان |
+| الإعدادات | `/settings` | 20+ خيار, حفظ تلقائي |
 
-## Pages
-1. `/` - Dashboard with TradingView chart + real prices
-2. `/market` - Full TradingView market experience
-3. `/auto-trading` - **NEW** Live auto-trading simulation with trade table, logs, stats
-4. `/war-room` - Expert consultation
-5. `/reports` - Performance analytics
-6. `/settings` - 20+ options with localStorage persistence
+## مصادر البيانات
+| المصدر | النوع | الحالة |
+|--------|-------|--------|
+| CoinGecko API | عملات رقمية (10 عملات) | ✅ حي |
+| open.er-api.com | فوركس (EUR, GBP, JPY) | ✅ حي |
+| TradingView Widgets | رسوم بيانية + شريط أسعار | ✅ |
+| خوارزمية سوق | ذهب، فضة، نفط، مؤشرات | ✅ محاكاة واقعية |
 
-## Recently Completed
+## نظام الخبراء (59 خبير)
+| الخبير الرئيسي | المساعدين | الدقة |
+|-----------------|-----------|-------|
+| 👑 المدير العام | 6 | 96% |
+| 📊 الخبير المالي | 7 | 96% |
+| 📰 خبير الأخبار | 6 | 96% (مُعزّز) |
+| 📈 الخبير الفني | 10 | 96% |
+| 🛡️ خبير المخاطر | 7 | 96% |
+| ⚙️ الخبير البرمجي | 6 | 96% |
+| 🧠 خبير القرارات | 6 | 96% |
+| 🔍 خبير التدقيق | 6 | 96% |
+| **المجموع** | **59** | **96%** |
 
-### v5.0 (Current)
-- [x] **Server-side Price API** (`/api/prices`) - CoinGecko + Yahoo Finance via Next.js route
-- [x] **Auto-Trading Page** (`/auto-trading`)
-  - Live trade simulation with open/close mechanics
-  - Real-time P&L tracking per trade
-  - Account info (Balance, Equity, Margin, Free Margin)
-  - Trade table with direction, entry, SL/TP, expert source
-  - Live logs showing every action
-  - Stats tab with win rate, best/worst trade
-  - Toggle button to activate/deactivate
-- [x] **Settings Enhancements**
-  - Language selection (Arabic/English)
-  - Mobile mode toggle
-  - Sound enabled toggle
-  - Theme selection (Dark/Light)
-- [x] **Navigation** - Auto-trading added to sidebar
+## نظام الإشعارات
+- مسح كل 30 ثانية على جميع الأسواق
+- إشعار صفقة عند 95%+ ثقة
+- 🔥 إشعار عالي الثقة عند 98%+
+- تحذير عند تغير سعر أكثر من 3%
+- جرس إشعارات في الرأس مع عداد
 
-### v4.0
-- TradingView integration, real prices, rebrand to سعود
+## الإعدادات المُطبقة
+- رصيد الحساب: $100 - $1,000,000 (افتراضي $1,000)
+- المخاطرة/صفقة: 0.5% - 10%
+- أقصى صفقات يومية: 1 - 50
+- أقصى صفقات مفتوحة: 1 - 20
+- إيقاف طارئ يومي/أسبوعي
+- فترة هدوء بعد خسائر متتالية
+- 15 استراتيجية قابلة للتفعيل
+- ساعات التداول (لندن/نيويورك/آسيا/24 ساعة)
+- نوع الحساب (تجريبي/حقيقي/ورقي)
 
-## Session History
-| Date | Version | Changes |
-|------|---------|---------|
-| Initial | v1.0 | 48 agents |
-| 2026-03-29 | v2.0 | Real analysis engines |
-| 2026-03-29 | v3.0 | Advanced strategies, 59 agents |
-| 2026-03-29 | v4.0 | TradingView, real prices, سعود |
-| 2026-03-29 | v5.0 | Auto-trading, server price API, language/mobile settings |
+## سجل الإصدارات
+| التاريخ | الإصدار | التغييرات |
+|---------|---------|-----------|
+| 2026-03-29 | v1.0 | 48 خبير, محاكاة أساسية |
+| 2026-03-29 | v2.0 | محركات تحليل حقيقية |
+| 2026-03-29 | v3.0 | استراتيجيات متقدمة, 59 خبير |
+| 2026-03-29 | v4.0 | TradingView, أسعار حقيقية, تسمية سعود |
+| 2026-03-29 | v5.0 | التداول الآلي, API أسعار, إعدادات لغة/جوال |
+| 2026-03-29 | v6.0 | ساعات السوق, محفظة, رصيد, فترة هدوء |
+| 2026-03-29 | v7.0 | أسعار حقيقية (CoinGecko+Forex), إشعارات, 96% دقة, مراقبة 24/7 |
+
+## المشاكل المعروفة والحلول
+| المشكلة | السبب | الحل |
+|---------|-------|------|
+| أسعار لا تظهر | Yahoo Finance CORS | أُزيلت, استُبدل بـ CoinGecko + open.er-api |
+| الإعدادات لا تُحفظ | مفتاح تخزين قديم | مفتاح جديد `saud-fin-v2` |
+| الرصيد أقل حد $1000 | localStorage محفوظ | إصدار جديد يجبر إعادة تعيين |
+| نتائج موحدة | عدم تنويع عشوائي | محرك عشوائي ببذرة (seeded random) |
+| شريط TradingView لا يعمل | رموز خاطئة | رموز COMEX/NYMEX/OANDA/BITSTAMP |

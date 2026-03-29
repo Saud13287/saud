@@ -1,44 +1,43 @@
-# Product Context: Next.js Starter Template
+# سياق المنتج: نظام سعود للذكاء المالي
 
-## Why This Template Exists
+## لماذا يوجد هذا المشروع
+تم إنشاء نظام سعود لتوفير شركة استثمارية كاملة تعمل بالذكاء الاصطناعي داخل المتصفح. 59 خبير ذكي يتعاونون لتحليل الأسواق المالية واتخاذ قرارات استثمارية بدقة عالية.
 
-Starting a new Next.js project involves boilerplate setup, configuration decisions, and establishing patterns. This template provides a clean, opinionated starting point that eliminates setup friction and establishes best practices from the start. It's optimized for AI-assisted development, where an AI can quickly extend the template based on user requirements.
+## المشاكل التي يحلها
+1. **صعوبة التحليل الشامل**: تحليل فني + مالي + أخبار + مخاطر في مكان واحد
+2. **التحيز في القرار**: 59 خبير ي投票ون → قرار متوازن بدون تحيز
+3. **تتبع الأسواق**: مراقبة 24/7 مع إشعارات تلقائية
+4. **إدارة المخاطر**: حساب تلقائي لحجم الصفقة ووقف الخسارة
+5. **بيانات السوق**: أسعار حقيقية من مصادر موثوقة
 
-## Problems It Solves
+## تجربة المستخدم
+1. المستخدم يفتح النظام → يرى لوحة التحكم مع أسعار مباشرة
+2. يذهب للسوق → يحلل الأصول برسوم TradingView
+3. يذهب لغرفة الحرب → يسأل سؤالاً → 6 خبراء يحللون → قرار
+4. يضغط "تنفيذ" → تُنشأ صفقة → يمكن إغلاقها
+5. يراقب الإشعارات → يحصل على تنبيهات عند صفقات 95%+
+6. يراجع التقارير → يرى دقة كل خبير
+7. يضبط الإعدادات → تُحفظ تلقائياً وتطبق
 
-1. **Setup Time**: Eliminates boilerplate configuration (TypeScript, Tailwind, ESLint)
-2. **Decision Fatigue**: Pre-made choices for tooling and patterns
-3. **AI Context**: Memory bank provides persistent context for AI assistants
-4. **Extensibility**: Recipe system for adding common features
-5. **Consistency**: Standardized project structure and conventions
+## أهداف تجربة المستخدم
+- **سهولة الاستخدام**: واجهة عربية واضحة
+- **السرعة**: أسعار مباشرة, تحليل فوري
+- **الثقة**: 96% دقة, تحليل متعدد الأبعاد
+- **التحكم**: إعدادات شاملة, تنفيذ يدوي
 
-## How It Should Work (User Flow)
+## تدفق المستخدم الأساسي
+```
+الرئيسية → السوق → غرفة الحرب → تنفيذ → مراقبة → إغلاق
+    ↓                                         ↓
+الإعدادات                                  التقارير
+    ↓
+المحفظة
+```
 
-1. User starts with this template
-2. User describes what they want to build to AI assistant
-3. AI adds pages, components, and features as needed
-4. AI uses recipes for common additions (database, auth)
-5. User previews changes via hot reload
-6. Iterate until satisfied
-7. Deploy
-
-## Key User Experience Goals
-
-- **Zero to Feature Fast**: Get building immediately, no setup required
-- **AI-Friendly**: Memory bank and recipes make AI assistance effective
-- **Flexible Foundation**: Can become any type of application
-- **Best Practices Built-In**: TypeScript strict mode, ESLint, clean structure
-
-## What This Template Provides
-
-1. **Clean App Structure**: Single page ready for expansion
-2. **Type Safety**: Full TypeScript setup with strict mode
-3. **Modern Styling**: Tailwind CSS 4 ready to use
-4. **Code Quality**: ESLint configured
-5. **Extensibility**: Recipe system for common features
-
-## Integration Points
-
-- **Database**: Use add-database recipe for Drizzle + SQLite
-- **Styling**: Tailwind CSS pre-configured
-- **AI Assistance**: Memory bank for context persistence
+## الميزات الفريدة
+1. **غرفة الحرب**: 6 خبراء يناقشون → تصويت مرجح → قرار
+2. **الفيتو**: خبير المخاطر يمكنه رفض أي صفقة
+3. **التدقيق**: خبير يراقب أداء جميع الخبراء الآخرين
+4. **الإشعارات**: تنبيه تلقائي عند صفقات 98%+ ثقة
+5. **الساعات**: كشف تلقائي لحالة السوق (مفتوح/مغلق)
+6. **البذرة**: كل استشارة تستخدم بذرة مختلفة → نتائج متنوعة
