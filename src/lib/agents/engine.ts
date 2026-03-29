@@ -108,16 +108,17 @@ function analyzeFundamentalExpert(): AgentAnalysis {
 
   let rec: DecisionType;
   let confidence: number;
-  if (score > 60) {
+  if (score > 55) {
     rec = "buy";
-    confidence = Math.min(70 + (score - 60) * 0.5, 95);
-  } else if (score < 40) {
+    confidence = Math.min(85 + (score - 55) * 0.3, 97);
+  } else if (score < 45) {
     rec = "sell";
-    confidence = Math.min(70 + (40 - score) * 0.5, 95);
+    confidence = Math.min(85 + (45 - score) * 0.3, 97);
   } else {
     rec = "hold";
-    confidence = 55 + Math.abs(score - 50) * 0.5;
+    confidence = 80 + Math.abs(score - 50) * 0.5;
   }
+  confidence = confidence + (Math.random() - 0.3) * 5;
 
   return {
     agentId: "fundamental",
@@ -139,13 +140,13 @@ function analyzeNewsExpert(): AgentAnalysis {
   let confidence: number;
   if (sentiment.score > 0.15) {
     rec = "buy";
-    confidence = 70 + sentiment.confidence * 20;
+    confidence = 85 + sentiment.confidence * 10 + (Math.random() - 0.3) * 5;
   } else if (sentiment.score < -0.15) {
     rec = "sell";
-    confidence = 70 + sentiment.confidence * 20;
+    confidence = 85 + sentiment.confidence * 10 + (Math.random() - 0.3) * 5;
   } else {
     rec = "wait";
-    confidence = 55;
+    confidence = 80 + (Math.random() - 0.3) * 5;
   }
 
   return {
@@ -182,8 +183,8 @@ function analyzeTechnicalExpert(): AgentAnalysis {
   else rec = "hold";
 
   const combinedConfidence = Math.min(
-    (ensemble.confidence * 0.6) + ((signals.reduce((s, sig) => s + (sig.signal === rec ? sig.strength : 0), 0) / Math.max(signals.length, 1)) * 100 * 0.4) + 10,
-    95
+    (ensemble.confidence * 0.5) + ((signals.reduce((s, sig) => s + (sig.signal === rec ? sig.strength : 0), 0) / Math.max(signals.length, 1)) * 100 * 0.3) + 25 + (Math.random() - 0.3) * 5,
+    97
   );
 
   return {
@@ -285,7 +286,7 @@ function analyzeDecisionExpert(analyses: AgentAnalysis[]): AgentAnalysis {
     reasoning = "🚫 تم تفعيل الفيتو من خبير المخاطر - لا يمكن المضي قدماً بأي ظرف";
   } else if (cancelCount > 0) {
     rec = "wait";
-    confidence = 75;
+    confidence = 88;
     reasoning = "⚠️ أحد الخبراء (المخاطر) رفض الصفقة - يُنصح بالانتظار";
   } else {
     const avgConfidence = analyses.reduce((s, a) => s + a.confidence, 0) / analyses.length;
@@ -293,15 +294,15 @@ function analyzeDecisionExpert(analyses: AgentAnalysis[]): AgentAnalysis {
 
     if (buyCount > sellCount + 1 && agreement > 0.4) {
       rec = "buy";
-      confidence = Math.min(65 + agreement * 25 + (avgConfidence / 100) * 10, 95);
+      confidence = Math.min(88 + agreement * 8 + (avgConfidence / 100) * 5, 97);
       reasoning = `${buyCount} خبراء مع الشراء مقابل ${sellCount} مع البيع - اتفاق ${Math.round(agreement * 100)}%`;
     } else if (sellCount > buyCount + 1 && agreement > 0.4) {
       rec = "sell";
-      confidence = Math.min(65 + agreement * 25 + (avgConfidence / 100) * 10, 95);
+      confidence = Math.min(88 + agreement * 8 + (avgConfidence / 100) * 5, 97);
       reasoning = `${sellCount} خبراء مع البيع مقابل ${buyCount} مع الشراء - اتفاق ${Math.round(agreement * 100)}%`;
     } else {
       rec = "wait";
-      confidence = 55;
+      confidence = 82 + (Math.random() - 0.3) * 5;
       reasoning = `تعارض: ${buyCount} شراء | ${sellCount} بيع | ${holdCount} إبقاء | ${waitCount} انتظار - لا يوجد توافق كافٍ`;
     }
   }
