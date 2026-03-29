@@ -48,7 +48,27 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-[var(--color-omega-card)] border border-[var(--color-omega-border)] rounded-xl p-5 space-y-4">
-          <h3 className="text-sm font-bold flex items-center gap-2"><span>🛡️</span> حدود المخاطرة</h3>
+          <h3 className="text-sm font-bold flex items-center gap-2"><span>🛡️</span> حدود المخاطرة والحساب</h3>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-[var(--color-omega-muted)]">رصيد الحساب</label>
+              <span className="text-sm font-bold text-emerald-400">${settings.accountBalance.toLocaleString()}</span>
+            </div>
+            <input
+              type="range" min="1000" max="1000000" step="1000"
+              value={settings.accountBalance}
+              onChange={(e) => updateSettings({ accountBalance: Number(e.target.value) })}
+              className="w-full accent-emerald-500"
+            />
+            <div className="flex gap-2 mt-1">
+              {[10000, 50000, 100000, 500000].map((v) => (
+                <button key={v} onClick={() => updateSettings({ accountBalance: v })} className="text-[9px] bg-[var(--color-omega-surface)] px-2 py-0.5 rounded hover:bg-emerald-900/30">
+                  ${(v/1000)}K
+                </button>
+              ))}
+            </div>
+          </div>
 
           {[
             { key: "riskLimit", label: "المخاطرة لكل صفقة (%)", min: 0.5, max: 10, step: 0.5, suffix: "%", color: "text-amber-400" },
@@ -92,6 +112,7 @@ export default function SettingsPage() {
               { key: "notificationsEnabled", label: "الإشعارات", desc: "تنبيهات الإشارات الجديدة" },
               { key: "enableCrisisDetection", label: "كشف الأزمات", desc: "تنبيه عند أنماط مشابهة للأزمات" },
               { key: "enableFOMODetection", label: "كشف FOMO", desc: "منع الشراء الانفعالي" },
+              { key: "cooldownEnabled", label: "فترة الهدوء", desc: `إيقاف بعد ${settings.maxConsecutiveLosses} خسائر متتالية` },
               { key: "mobileMode", label: "وضع الجوال", desc: "واجهة محسنة للشاشات الصغيرة" },
               { key: "soundEnabled", label: "الصوت", desc: "تنبيهات صوتية عند الصفقات" },
             ].map((toggle) => (

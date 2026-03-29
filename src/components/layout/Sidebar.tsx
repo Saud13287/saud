@@ -6,6 +6,7 @@ import { totalAgents } from "@/lib/agents/registry";
 const navItems = [
   { href: "/", label: "لوحة التحكم", icon: "📊", desc: "الرئيسية" },
   { href: "/market", label: "السوق", icon: "📈", desc: "التداول" },
+  { href: "/portfolio", label: "المحفظة", icon: "💰", desc: "رأس المال" },
   { href: "/auto-trading", label: "التداول الآلي", icon: "🤖", desc: "التشغيل" },
   { href: "/war-room", label: "غرفة الحرب", icon: "⚔️", desc: "الاستشارات" },
   { href: "/reports", label: "التقارير", icon: "📋", desc: "الأداء" },

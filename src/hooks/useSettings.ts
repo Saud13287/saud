@@ -28,6 +28,8 @@ export interface AppSettings {
   mobileMode: boolean;
   soundEnabled: boolean;
   theme: string;
+  accountBalance: number;
+  cooldownEnabled: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -60,6 +62,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   mobileMode: false,
   soundEnabled: true,
   theme: "dark",
+  accountBalance: 100000,
+  cooldownEnabled: true,
 };
 
 const STORAGE_KEY = "saud-fin-settings";
