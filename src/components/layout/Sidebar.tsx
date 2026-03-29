@@ -10,9 +10,13 @@ const navItems = [
   { href: "/auto-trading", label: "التداول الآلي", icon: "🤖", desc: "التشغيل" },
   { href: "/war-room", label: "غرفة الحرب", icon: "⚔️", desc: "الاستشارات" },
   { href: "/ai-analysis", label: "تحليل AI", icon: "🧠", desc: "ذكاء اصطناعي" },
+  { href: "/copy-trading", label: "نسخ التداول", icon: "📋", desc: "نسخ تلقائي" },
+  { href: "/strategy-builder", label: "باني الاستراتيجيات", icon: "🔧", desc: "بدون كود" },
+  { href: "/alerts", label: "التنبيهات", icon: "🔔", desc: "تنبيهات سعرية" },
   { href: "/broker", label: "الوُسطاء", icon: "🔗", desc: "20+ وسيط معتمد" },
   { href: "/backtesting", label: "الاختبار الخلفي", icon: "📐", desc: "Backtesting" },
   { href: "/reports", label: "التقارير", icon: "📋", desc: "الأداء" },
+  { href: "/auth", label: "الحساب", icon: "👤", desc: "تسجيل الدخول" },
   { href: "/settings", label: "الإعدادات", icon: "⚙️", desc: "التخصيص" },
 ];
 
@@ -89,7 +93,7 @@ export default function Sidebar() {
             <span className="text-xs font-medium">النظام يعمل</span>
           </div>
           <div className="flex items-center justify-between text-[10px] text-[var(--color-omega-muted)]">
-            <span>v4.0 | سعود</span>
+            <span>v8.0 | سعود</span>
             <span>السوق: نشط</span>
           </div>
         </div>
