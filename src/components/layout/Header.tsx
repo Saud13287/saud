@@ -3,10 +3,19 @@ import { useState, useEffect } from "react";
 import TickerTape from "@/components/tradingview/TickerTape";
 
 export default function Header() {
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState("");
+  const [date, setDate] = useState("");
 
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
+    const update = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString("ar-SA"));
+      setDate(now.toLocaleDateString("ar-SA", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+      }));
+    };
+    update();
+    const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -16,18 +25,13 @@ export default function Header() {
         <div>
           <h2 className="text-sm font-semibold">مرحباً بك في نظام سعود</h2>
           <p className="text-[10px] text-[var(--color-omega-muted)]">
-            {time.toLocaleDateString("ar-SA", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+            {date || "..."}
           </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-left">
             <p className="text-lg font-mono text-emerald-400">
-              {time.toLocaleTimeString("ar-SA")}
+              {time || "--:--:--"}
             </p>
           </div>
           <div className="flex items-center gap-2 bg-[var(--color-omega-card)] px-3 py-1.5 rounded-lg">
