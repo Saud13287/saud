@@ -4,101 +4,68 @@ import { agentRegistry } from "@/lib/agents/registry";
 import ExpertBoard from "@/components/dashboard/ExpertBoard";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
 import SystemHealthPanel from "@/components/dashboard/SystemHealthPanel";
+import TradingViewWidget from "@/components/tradingview/TradingViewWidget";
+import { fetchAllRealPrices, RealtimePrice } from "@/lib/market/realtime";
 
-interface MarketAsset {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  trend: string;
-  rsi: number;
-}
-
-function MarketOverview() {
-  const [assets, setAssets] = useState<MarketAsset[]>([]);
-  const [summary, setSummary] = useState<{ fearGreedIndex: number; sp500Change: number; vixLevel: number; usdIndex: number } | null>(null);
+function QuickPrices() {
+  const [prices, setPrices] = useState<RealtimePrice[]>([]);
 
   useEffect(() => {
-    fetch("/api/market")
-      .then((r) => r.json())
-      .then((data) => {
-        setAssets(data.assets || []);
-        setSummary(data.marketSummary || null);
-      })
-      .catch(() => {});
+    fetchAllRealPrices().then((data) => {
+      if (data.length > 0) setPrices(data.slice(0, 8));
+    }).catch(() => {});
   }, []);
 
+  if (prices.length === 0) return null;
+
   return (
-    <div className="bg-[var(--color-omega-card)] border border-[var(--color-omega-border)] rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold flex items-center gap-2">
-          <span>🌐</span>
-          نظرة على السوق
-        </h3>
-        {summary && (
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1">
-              <span className="text-[var(--color-omega-muted)]">خوف/طمع:</span>
-              <span className={`font-bold ${summary.fearGreedIndex > 55 ? "text-green-400" : summary.fearGreedIndex < 45 ? "text-red-400" : "text-yellow-400"}`}>
-                {summary.fearGreedIndex}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[var(--color-omega-muted)]">VIX:</span>
-              <span className={`font-bold ${summary.vixLevel > 25 ? "text-red-400" : "text-green-400"}`}>
-                {summary.vixLevel}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[var(--color-omega-muted)]">USD:</span>
-              <span className="font-bold">{summary.usdIndex}</span>
-            </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      {prices.map((p) => (
+        <div key={p.symbol} className="bg-[var(--color-omega-card)] border border-[var(--color-omega-border)] rounded-lg p-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-medium">{p.nameAr}</span>
+            <span className={`text-[10px] font-bold ${p.changePercent24h >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+              {p.changePercent24h >= 0 ? "▲" : "▼"} {Math.abs(p.changePercent24h).toFixed(2)}%
+            </span>
           </div>
-        )}
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {assets.slice(0, 8).map((asset) => (
-          <div key={asset.symbol} className="bg-[var(--color-omega-surface)] p-3 rounded-lg">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium">{asset.name}</span>
-              <span className={`text-xs ${asset.changePercent > 0 ? "text-green-400" : asset.changePercent < 0 ? "text-red-400" : "text-[var(--color-omega-muted)]"}`}>
-                {asset.changePercent > 0 ? "▲" : asset.changePercent < 0 ? "▼" : "─"} {Math.abs(asset.changePercent).toFixed(2)}%
-              </span>
-            </div>
-            <p className="text-sm font-bold">{asset.price.toLocaleString()}</p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-[var(--color-omega-muted)]">RSI: {asset.rsi}</span>
-              <div className="flex-1 h-1 bg-[var(--color-omega-border)] rounded-full">
-                <div
-                  className="h-1 rounded-full"
-                  style={{
-                    width: `${asset.rsi}%`,
-                    backgroundColor: asset.rsi > 70 ? "var(--color-omega-red)" : asset.rsi < 30 ? "var(--color-omega-green)" : "var(--color-omega-gold)",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          <p className="text-sm font-bold font-mono">
+            {p.price > 1000 ? p.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) : p.price > 1 ? p.price.toFixed(2) : p.price.toFixed(4)}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-1">لوحة التحكم الرئيسية</h1>
-        <p className="text-sm text-[var(--color-omega-muted)]">
-          نظرة عامة على أداء النظام وجميع الخبراء - إجمالي: {agentRegistry.length + agentRegistry.reduce((s, e) => s + e.assistants.length, 0)} خبير
-        </p>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold">لوحة التحكم</h1>
+          <p className="text-xs text-[var(--color-omega-muted)]">
+            نظام سعود - {agentRegistry.length + agentRegistry.reduce((s, e) => s + e.assistants.length, 0)} خبير ذكي
+          </p>
+        </div>
       </div>
 
-      <MarketOverview />
-      <SystemHealthPanel />
+      <div className="bg-[var(--color-omega-card)] border border-[var(--color-omega-border)] rounded-xl overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--color-omega-border)]">
+          <h3 className="text-xs font-bold">الرسم البياني - الذهب (XAU/USD)</h3>
+          <span className="text-[10px] text-[var(--color-omega-muted)]">TradingView</span>
+        </div>
+        <TradingViewWidget
+          symbol="COMEX:GC1!"
+          interval="D"
+          height={380}
+          studies={["RSI@tv-basicstudies", "MACD@tv-basicstudies", "BB@tv-basicstudies"]}
+        />
+      </div>
+
+      <QuickPrices />
+
       <PortfolioSummary />
+      <SystemHealthPanel />
       <ExpertBoard experts={agentRegistry} />
     </div>
   );
