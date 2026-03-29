@@ -25,6 +25,9 @@ export interface AppSettings {
   cooldownAfterLoss: number;
   enableCrisisDetection: boolean;
   enableFOMODetection: boolean;
+  mobileMode: boolean;
+  soundEnabled: boolean;
+  theme: string;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -54,6 +57,9 @@ const DEFAULT_SETTINGS: AppSettings = {
   cooldownAfterLoss: 24,
   enableCrisisDetection: true,
   enableFOMODetection: true,
+  mobileMode: false,
+  soundEnabled: true,
+  theme: "dark",
 };
 
 const STORAGE_KEY = "saud-fin-settings";

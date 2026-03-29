@@ -92,6 +92,8 @@ export default function SettingsPage() {
               { key: "notificationsEnabled", label: "الإشعارات", desc: "تنبيهات الإشارات الجديدة" },
               { key: "enableCrisisDetection", label: "كشف الأزمات", desc: "تنبيه عند أنماط مشابهة للأزمات" },
               { key: "enableFOMODetection", label: "كشف FOMO", desc: "منع الشراء الانفعالي" },
+              { key: "mobileMode", label: "وضع الجوال", desc: "واجهة محسنة للشاشات الصغيرة" },
+              { key: "soundEnabled", label: "الصوت", desc: "تنبيهات صوتية عند الصفقات" },
             ].map((toggle) => (
               <div key={toggle.key} className="flex items-center justify-between">
                 <div>
@@ -157,6 +159,30 @@ export default function SettingsPage() {
                 <option value="BITSTAMP:ETHUSD">إيثريوم</option>
                 <option value="NYMEX:CL1!">نفط WTI</option>
                 <option value="SP:SPX">S&P 500</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs text-[var(--color-omega-muted)] block mb-1">اللغة</label>
+              <select
+                value={settings.language}
+                onChange={(e) => updateSettings({ language: e.target.value })}
+                className="w-full bg-[var(--color-omega-surface)] border border-[var(--color-omega-border)] rounded-lg px-3 py-2 text-xs"
+              >
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs text-[var(--color-omega-muted)] block mb-1">المظهر</label>
+              <select
+                value={settings.theme}
+                onChange={(e) => updateSettings({ theme: e.target.value })}
+                className="w-full bg-[var(--color-omega-surface)] border border-[var(--color-omega-border)] rounded-lg px-3 py-2 text-xs"
+              >
+                <option value="dark">داكن</option>
+                <option value="light">فاتح</option>
               </select>
             </div>
           </div>
