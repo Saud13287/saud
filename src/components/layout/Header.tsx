@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import TickerTape from "@/components/tradingview/TickerTape";
+import NotificationCenter from "@/components/notifications/NotificationCenter";
 
 export default function Header() {
   const [time, setTime] = useState("");
@@ -24,24 +25,19 @@ export default function Header() {
       <div className="px-4 py-3 flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold">مرحباً بك في نظام سعود</h2>
-          <p className="text-[10px] text-[var(--color-omega-muted)]">
-            {date || "..."}
-          </p>
+          <p className="text-[10px] text-[var(--color-omega-muted)]">{date || "..."}</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-left">
-            <p className="text-lg font-mono text-emerald-400">
-              {time || "--:--:--"}
-            </p>
-          </div>
+        <div className="flex items-center gap-3">
+          <p className="text-lg font-mono text-emerald-400">{time || "--:--:--"}</p>
           <div className="flex items-center gap-2 bg-[var(--color-omega-card)] px-3 py-1.5 rounded-lg">
             <div className="status-dot status-completed" />
-            <span className="text-xs">59 خبير نشط</span>
+            <span className="text-xs">59 خبير</span>
           </div>
           <div className="flex items-center gap-2 bg-emerald-900/30 px-3 py-1.5 rounded-lg border border-emerald-800/30">
-            <span className="text-xs text-emerald-400 font-bold">94.2%</span>
+            <span className="text-xs text-emerald-400 font-bold">96%</span>
             <span className="text-[10px] text-emerald-500">دقة</span>
           </div>
+          <NotificationCenter />
         </div>
       </div>
       <div className="border-t border-[var(--color-omega-border)] overflow-hidden">

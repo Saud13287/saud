@@ -12,7 +12,7 @@ function createAssistant(
     nameEn,
     role,
     status: "idle",
-    accuracy: 88 + Math.random() * 10,
+    accuracy: 95 + Math.random() * 4,
     lastActive: new Date().toISOString(),
   };
 }
@@ -50,7 +50,7 @@ export function createAgentRegistry(): ExpertAgent[] {
       icon: "📊",
       color: "#3B82F6",
       status: "idle",
-      accuracy: 97,
+      accuracy: 96,
       weight: 0.15,
       assistants: [
         createAssistant("fund-1", "محلل القطاعات الصناعية", "Sector Analyst", "يركز على قطاع محدد (تقنية، طاقة، صحة)"),
@@ -93,7 +93,7 @@ export function createAgentRegistry(): ExpertAgent[] {
       icon: "📈",
       color: "#10B981",
       status: "idle",
-      accuracy: 95,
+      accuracy: 96,
       weight: 0.2,
       assistants: [
         createAssistant("tech-1", "صياد الأنماط السعرية", "Pattern Hunter", "يكتشف أنماط الشموع والرسوم الكلاسيكية (Head&Shoulders, Double Top)"),
@@ -161,7 +161,7 @@ export function createAgentRegistry(): ExpertAgent[] {
       icon: "🧠",
       color: "#EC4899",
       status: "idle",
-      accuracy: 95,
+      accuracy: 96,
       weight: 0.13,
       assistants: [
         createAssistant("psych-1", "محلل أخطائك التاريخية", "Historical Error Analyst", "يكتشف أنماط الخسائر السابقة ويحذر"),
@@ -182,7 +182,7 @@ export function createAgentRegistry(): ExpertAgent[] {
       icon: "🔍",
       color: "#6366F1",
       status: "idle",
-      accuracy: 97,
+      accuracy: 96,
       weight: 0.15,
       assistants: [
         createAssistant("audit-1", "مراقب أداء الخبراء", "Expert Performance Monitor", "تقييم مستمر لدقة كل خبير وتعديل الأوزان"),

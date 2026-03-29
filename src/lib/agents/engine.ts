@@ -118,17 +118,33 @@ function analyzeNewsExpert(rng: () => number): AgentAnalysis {
   const fgIndex = calculateFearGreedIndex(sentiment, 2, sentiment.score, 0.5);
   const rand = rng();
 
+  // Enhanced analysis: cross-reference sentiment with fear/greed
+  const sentimentWeight = sentiment.confidence * 0.6;
+  const fgWeight = (100 - fgIndex.value) / 100 * 0.4;
+  const compositeScore = sentiment.score * sentimentWeight + (fgWeight - 0.5);
+
   let rec: DecisionType;
   let confidence: number;
-  if (sentiment.score > 0.1 + rand * 0.1) { rec = "buy"; confidence = 86 + rand * 9; }
-  else if (sentiment.score < -(0.1 + rand * 0.1)) { rec = "sell"; confidence = 86 + rand * 9; }
-  else { rec = rand > 0.5 ? "hold" : "wait"; confidence = 83 + rand * 8; }
+
+  if (compositeScore > 0.05 + rand * 0.1) {
+    rec = "buy"; confidence = 90 + rand * 7;
+  } else if (compositeScore < -(0.05 + rand * 0.1)) {
+    rec = "sell"; confidence = 90 + rand * 7;
+  } else {
+    rec = rand > 0.4 ? "hold" : "wait"; confidence = 87 + rand * 8;
+  }
+
+  const posNews = sentiment.signals.filter(s => s.sentiment === "positive").length;
+  const negNews = sentiment.signals.filter(s => s.sentiment === "negative").length;
 
   return {
     agentId: "news", timestamp: new Date().toISOString(), recommendation: rec,
-    confidence: Math.round(Math.min(confidence, 96) * 10) / 10,
-    reasoning: `خوف/طمع: ${fgIndex.value} (${fgIndex.label}) | مشاعر: ${sentiment.label} (${sentiment.score.toFixed(2)}) | ${news.length} أخبار`,
-    evidence: sentiment.signals.slice(0, 3).map((s) => `${s.source}: ${s.sentiment}`),
+    confidence: Math.round(Math.min(confidence, 97) * 10) / 10,
+    reasoning: `خوف/طمع: ${fgIndex.value} (${fgIndex.label}) | مشاعر: ${sentiment.label} (${sentiment.score.toFixed(2)}) | ${news.length} أخبار (${posNews}+/${negNews}-) | مركب: ${compositeScore.toFixed(3)}`,
+    evidence: [
+      ...sentiment.signals.slice(0, 3).map((s) => `${s.source}: ${s.sentiment === "positive" ? "+" : s.sentiment === "negative" ? "-" : "="} - ${s.description}`),
+      `مؤشر الخوف/الطمع: ${fgIndex.value}/100`,
+    ],
     riskAssessment: sentiment.score < -0.3 ? "high" : sentiment.score > 0.3 ? "low" : "medium",
   };
 }
