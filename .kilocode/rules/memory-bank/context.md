@@ -1,111 +1,71 @@
-# Active Context: OmegaFin Autonomous Intelligence System
+# Active Context: OmegaFin Autonomous Intelligence System v3.0
 
 ## Current State
 
-**Template Status**: ✅ Production Ready - OmegaFin v2.0 with Real Analysis Engines
-
-The project has been significantly enhanced with real analysis engines that replace simulated random data with actual calculation algorithms.
+**Status**: ✅ Production Ready - OmegaFin v3.0 with Professional UI & Advanced Analysis
 
 ## Recently Completed
 
-- [x] Base Next.js 16 setup with App Router
-- [x] TypeScript configuration with strict mode
-- [x] Tailwind CSS 4 integration
-- [x] ESLint configuration
-- [x] OmegaFin v1.0 - 48 agents with basic simulation
-- [x] **v2.0 Enhancement: Real Analysis Engines**
-  - [x] Technical Analysis Engine (RSI, MACD, Bollinger Bands, SMA, ATR, Stochastic, S/R detection, candlestick patterns)
-  - [x] Fundamental Analysis Engine (P/E, P/B, D/E, ROE, profit margin, revenue growth, earnings growth, fair value calculation)
-  - [x] Sentiment Analysis Engine (Arabic/English keyword analysis, fear/greed index, fake news detection)
-  - [x] Risk Management Engine (position sizing, portfolio exposure, hedge need evaluation, Kelly criterion)
-  - [x] Pattern Recognition Engine (Head & Shoulders, Double Top/Bottom, Triangles, Flags, Crisis detection)
-  - [x] Backtesting Engine (full strategy backtesting with Sharpe ratio, profit factor, drawdown analysis)
-  - [x] Persistent Database Layer (trade history, sessions, learning metrics)
-  - [x] Enhanced Consultation Engine (real analysis per expert instead of random)
-  - [x] Sophisticated Weighted Voting with regime detection and adaptive weights
-- [x] **Enhanced UI Components**
-  - [x] Market Overview with live asset data and RSI indicators
-  - [x] War Room with multi-phase animation (gathering → analyzing → decided)
-  - [x] Expandable expert analysis cards with evidence display
-  - [x] Vote distribution visualization
-  - [x] Audit report display
-  - [x] Enhanced API routes with richer data
+### v3.0 Enhancements (Current)
+- [x] **Professional UI Overhaul**
+  - Canvas-based LineChart and CandlestickChart components
+  - Enhanced sidebar with active state, quick stats, branding
+  - Portfolio summary with equity curve and 10+ risk metrics
+  - Comprehensive settings page with 15+ controls
+  - Strategy selection UI with 15 strategies
+- [x] **Advanced Strategies Engine** (`src/lib/strategies/advanced.ts`)
+  - Ichimoku Cloud with full 5-component analysis
+  - Fibonacci retracement/extension levels
+  - VWAP signal generation
+  - Elliott Wave pattern detection
+  - SMC (Smart Money Concepts) with Order Blocks & Liquidity
+  - Market Profile with POC and Value Area
+  - Volume Profile analysis
+  - Ensemble voting system for multi-strategy decisions
+- [x] **Real Market Data Integration** (`src/lib/market/realtime.ts`)
+  - Yahoo Finance API integration for stocks, forex, commodities
+  - CoinGecko API integration for crypto data
+  - Historical price data fetching (OHLCV)
+  - Realistic fallback data generation
+- [x] **New Assistant Agents** (11 new agents added)
+  - CEO: Final Decision Engine (Ensemble Methods)
+  - Fundamental: Advanced Financial Analyst, Growth Stock Analyst
+  - News: Central Bank Impact Analyst
+  - Technical: SMC Expert, Elliott Wave Expert, Ichimoku Expert, Fibonacci Expert, Market Profile Expert
+  - Risk: Kelly Criterion Calculator, Correlation Analyst
+  - System: API Performance Monitor
+  - Decision: FOMO Analyzer
+  - Audit: Learning Strategy Auditor
+- [x] **Enhanced Consultation Engine**
+  - Ensemble decision-making with 15+ strategies
+  - Improved confidence calculation targeting 95%
+  - Better agreement scoring
+  - Weighted voting with regime awareness
+- [x] **Enhanced Settings**
+  - Risk per trade, min R/R ratio, max daily trades, max open positions
+  - Daily/weekly kill switches, max slippage
+  - Trading hours selection (London, NY, Asia, overlap, 24h)
+  - Account type (Demo, Live, Paper)
+  - 15-strategy selection UI
 
-## Current Structure
+### v2.0 (Previous)
+- Real analysis engines (Technical, Fundamental, Sentiment, Risk, Pattern Recognition, Backtesting)
+- Persistent database layer
+- Enhanced consultation with real analysis logic
 
-| File/Directory | Purpose | Status |
-|----------------|---------|--------|
-| `src/app/page.tsx` | Dashboard with market overview | ✅ |
-| `src/app/war-room/page.tsx` | Enhanced war room | ✅ |
-| `src/app/reports/page.tsx` | Expert reports | ✅ |
-| `src/app/settings/page.tsx` | System settings | ✅ |
-| `src/app/api/agents/route.ts` | Agent consultation API | ✅ |
-| `src/app/api/market/route.ts` | Enhanced market data API | ✅ |
-| `src/lib/agents/engine.ts` | Enhanced consultation engine | ✅ |
-| `src/lib/agents/learning.ts` | Enhanced learning engine | ✅ |
-| `src/lib/analysis/technical.ts` | Technical analysis algorithms | ✅ |
-| `src/lib/analysis/fundamental.ts` | Fundamental analysis | ✅ |
-| `src/lib/analysis/sentiment.ts` | Sentiment analysis (AR/EN) | ✅ |
-| `src/lib/analysis/risk.ts` | Risk management engine | ✅ |
-| `src/lib/analysis/patterns.ts` | Pattern recognition | ✅ |
-| `src/lib/analysis/backtest.ts` | Backtesting engine | ✅ |
-| `src/lib/db/store.ts` | Persistent data store | ✅ |
+### v1.0 (Foundation)
+- 48 agents (8 main + 40 assistants)
+- War room interface, Arabic RTL dashboard, reports, settings
 
-## Analysis Engine Details
-
-### Technical Analysis (`src/lib/analysis/technical.ts`)
-- SMA, EMA calculation
-- RSI (14-period)
-- MACD with signal line and histogram
-- Bollinger Bands (20-period, 2 std dev)
-- ATR (Average True Range)
-- Stochastic oscillator
-- Support/Resistance detection
-- Candlestick pattern detection (Doji, Hammer, Engulfing)
-
-### Fundamental Analysis (`src/lib/analysis/fundamental.ts`)
-- P/E ratio evaluation
-- P/B ratio analysis
-- Debt-to-equity assessment
-- ROE, ROA metrics
-- Profit margin analysis
-- Revenue/earnings growth
-- Free cash flow evaluation
-- Fair value DCF calculation
-
-### Sentiment Analysis (`src/lib/analysis/sentiment.ts`)
-- Arabic keyword sentiment (25+ words)
-- English keyword sentiment (25+ words)
-- Fear/Greed index calculation
-- Fake news detection
-- Source credibility assessment
-
-### Risk Management (`src/lib/analysis/risk.ts`)
-- Position sizing with Kelly criterion
-- Stop-loss/take-profit calculation
-- Portfolio exposure analysis
-- Correlation/concentration risk
-- Hedge need evaluation
-- Veto system for high-risk trades
-
-### Pattern Recognition (`src/lib/analysis/patterns.ts`)
-- Head & Shoulders detection
-- Double Top/Bottom detection
-- Triangle patterns (ascending, descending, symmetrical)
-- Flag patterns
-- Crisis pattern detection (comparison with historical crises)
-
-### Backtesting (`src/lib/analysis/backtest.ts`)
-- Full strategy backtesting
-- Win rate, profit factor, Sharpe ratio
-- Max drawdown calculation
-- Best/worst trade tracking
-- Multi-strategy comparison
+## Architecture
+- 8 Main Experts + 51 Assistant Agents = **59 Total Agents**
+- 7 Advanced Strategies + Ensemble System
+- 6 Analysis Engines
+- Real Market Data APIs (Yahoo Finance, CoinGecko)
 
 ## Session History
-
-| Date | Changes |
-|------|---------|
-| Initial | Template created with base setup |
-| 2026-03-29 | v1.0 - 48 agents, war room, reports, settings |
-| 2026-03-29 | v2.0 - Real analysis engines, pattern recognition, backtesting, sentiment, risk management |
+| Date | Version | Changes |
+|------|---------|---------|
+| Initial | v1.0 | 48 agents, basic simulation |
+| 2026-03-29 | v2.0 | Real analysis engines |
+| 2026-03-29 | v3.0 | Professional UI, advanced strategies, real market data, 59 agents |
