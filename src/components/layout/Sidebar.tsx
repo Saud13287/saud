@@ -9,6 +9,9 @@ const navItems = [
   { href: "/portfolio", label: "المحفظة", icon: "💰", desc: "رأس المال" },
   { href: "/auto-trading", label: "التداول الآلي", icon: "🤖", desc: "التشغيل" },
   { href: "/war-room", label: "غرفة الحرب", icon: "⚔️", desc: "الاستشارات" },
+  { href: "/ai-analysis", label: "تحليل AI", icon: "🧠", desc: "ذكاء اصطناعي" },
+  { href: "/broker", label: "الوُسطاء", icon: "🔗", desc: "Binance/IB" },
+  { href: "/backtesting", label: "الاختبار الخلفي", icon: "📐", desc: "Backtesting" },
   { href: "/reports", label: "التقارير", icon: "📋", desc: "الأداء" },
   { href: "/settings", label: "الإعدادات", icon: "⚙️", desc: "التخصيص" },
 ];
