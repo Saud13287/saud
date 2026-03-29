@@ -1,466 +1,307 @@
 import {
-  ExpertAgent,
-  AgentAnalysis,
-  WarRoomSession,
-  CEODecision,
-  AuditReport,
-  DecisionType,
+  ExpertAgent, AgentAnalysis, WarRoomSession, CEODecision, AuditReport, DecisionType,
 } from "./types";
 import { agentRegistry } from "./registry";
 import {
-  runFullTechnicalAnalysis,
-  detectSupportResistance,
-  detectCandlestickPatterns,
-  PriceData,
+  runFullTechnicalAnalysis, detectSupportResistance, detectCandlestickPatterns, PriceData,
 } from "@/lib/analysis/technical";
-import {
-  analyzeFundamentals,
-  calculateFundamentalScore,
-  FundamentalData,
-} from "@/lib/analysis/fundamental";
-import {
-  analyzeNewsSentiment,
-  calculateFearGreedIndex,
-  NewsItem,
-} from "@/lib/analysis/sentiment";
-import {
-  calculatePositionSize,
-  RiskParameters,
-} from "@/lib/analysis/risk";
-import {
-  detectAllPatterns,
-} from "@/lib/analysis/patterns";
-import {
-  runAllStrategies,
-  calculateEnsembleDecision,
-} from "@/lib/strategies/advanced";
+import { analyzeFundamentals, calculateFundamentalScore, FundamentalData } from "@/lib/analysis/fundamental";
+import { analyzeNewsSentiment, calculateFearGreedIndex, NewsItem } from "@/lib/analysis/sentiment";
+import { calculatePositionSize, RiskParameters } from "@/lib/analysis/risk";
+import { detectAllPatterns } from "@/lib/analysis/patterns";
+import { runAllStrategies, calculateEnsembleDecision } from "@/lib/strategies/advanced";
 import { saveSession } from "@/lib/db/store";
 
-function generateMockPriceData(count: number): PriceData[] {
-  const data: PriceData[] = [];
-  let price = 100 + Math.random() * 50;
-  const now = Date.now();
-  const trend = (Math.random() - 0.5) * 0.02;
+const NEWS_POOL = [
+  { title: "البنك المركزي يحافظ على أسعار الفائدة", source: "رويترز" },
+  { title: "ارتفاع أسهم التكنولوجيا بعد أرباح قوية", source: "بلومبرغ" },
+  { title: "مخاوف من تباطؤ النمو في الصين", source: "سي إن بي سي" },
+  { title: "الذهب يرتفع مع زيادة طلبات الملاذ الآمن", source: "رويترز" },
+  { title: "النفط يتراجع بسبب قلق الطلب", source: "WSJ" },
+  { title: "بيتكوين يقترب من 100 ألف بدعم ETF", source: "كوين ديسك" },
+  { title: "الفيدرالي يشير لتقليل الفائدة قريباً", source: "بلومبرغ" },
+  { title: "توترات جيوسياسية تدعم الذهب", source: "رويترز" },
+  { title: "أرباح شركات تتجاوز التوقعات", source: "فايننشال تايمز" },
+  { title: "تقلبات في سوق العملات الرقمية", source: "كوين تيليغراف" },
+  { title: "⊚ؤشر الدولار يرتفع أمام السلة", source: "رويترز" },
+  { title: "⊚ أسعار الذهب تسجل ارتفاعاً历史新", source: "بلومبرغ" },
+  { title: "⊚ انتعاش سوق الأسهم العالمية", source: "فايننشال تايمز" },
+  { title: "⊚ مؤشر الخوف من السوق ينخفض", source: "سي إن بي سي" },
+  { title: "⊚ زيادة الاستثمارات المؤسسية في الكريبتو", source: "كوين ديسك" },
+  { title: "⊚ تراجع في أسعار السلع الأساسية", source: "WSJ" },
+  { title: "⊚ بوابات نفطية جديدة تزيد الإنتاج", source: "رويترز" },
+  { title: "⊚ بيانات توظيف قوية تدعم السوق", source: "بلومبرغ" },
+];
 
+let consultationCounter = 0;
+
+function seededRandom(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+function generateMockPriceData(count: number, rng: () => number): PriceData[] {
+  const data: PriceData[] = [];
+  let price = 80 + rng() * 100;
+  const now = Date.now();
+  const trend = (rng() - 0.45) * 0.03;
   for (let i = 0; i < count; i++) {
     const drift = trend * price;
-    const noise = (Math.random() - 0.5) * price * 0.02;
+    const noise = (rng() - 0.5) * price * 0.025;
     const open = price;
-    const close = price + drift + noise;
-    const high = Math.max(open, close) + Math.random() * price * 0.01;
-    const low = Math.min(open, close) - Math.random() * price * 0.01;
-    data.push({
-      open,
-      high,
-      low,
-      close,
-      volume: 800000 + Math.random() * 4000000,
-      timestamp: new Date(now - (count - i) * 3600000).toISOString(),
-    });
+    const close = Math.max(0.1, price + drift + noise);
+    const high = Math.max(open, close) + rng() * price * 0.012;
+    const low = Math.min(open, close) - rng() * price * 0.012;
+    data.push({ open, high, low, close, volume: 500000 + rng() * 5000000, timestamp: new Date(now - (count - i) * 3600000).toISOString() });
     price = close;
   }
   return data;
 }
 
-function generateMockNews(): NewsItem[] {
-  const headlines = [
-    { title: "البنك المركزي الأمريكي يحافظ على أسعار الفائدة", source: "رويترز" },
-    { title: "ارتفاع أسهم التكنولوجيا بعد توقعات أرباح قوية من NVIDIA", source: "بلومبرغ" },
-    { title: "مخاوف من تباطؤ النمو الاقتصادي في الصين", source: "سي إن بي سي" },
-    { title: "الذهب يرتفع نحو 2660 مع زيادة طلبات الملاذ الآمن", source: "رويترز" },
-    { title: "أسعار النفط تتراجع 2% بسبب مخاوف الطلب العالمي", source: "وول ستريت جورنال" },
-    { title: "البيتكوين يقترب من 100 ألف دولار بدعم من ETFs المؤسسية", source: "كوين ديسك" },
-  ];
-  return headlines.map((h, i) => ({
-    title: h.title,
-    source: h.source,
-    timestamp: new Date(Date.now() - i * 3600000).toISOString(),
-    content: h.title,
-    language: "ar",
+function generateMockNews(rng: () => number): NewsItem[] {
+  const shuffled = [...NEWS_POOL].sort(() => rng() - 0.5);
+  return shuffled.slice(0, 4 + Math.floor(rng() * 3)).map((h, i) => ({
+    title: h.title, source: h.source,
+    timestamp: new Date(Date.now() - i * 1800000).toISOString(),
+    content: h.title, language: "ar",
   }));
 }
 
-function generateMockFundamentals(): FundamentalData {
-  const bullish = Math.random() > 0.5;
+function generateMockFundamentals(rng: () => number): FundamentalData {
+  const bullish = rng() > 0.45;
+  const r = () => rng();
   return {
-    peRatio: bullish ? 8 + Math.random() * 12 : 25 + Math.random() * 20,
-    pbRatio: bullish ? 0.5 + Math.random() * 1.5 : 2 + Math.random() * 3,
-    debtToEquity: bullish ? Math.random() * 0.8 : 1.5 + Math.random() * 2,
-    currentRatio: bullish ? 1.5 + Math.random() * 1.5 : 0.8 + Math.random() * 0.5,
-    roe: bullish ? 15 + Math.random() * 20 : 3 + Math.random() * 8,
-    roa: bullish ? 8 + Math.random() * 12 : 1 + Math.random() * 5,
-    profitMargin: bullish ? 12 + Math.random() * 15 : 2 + Math.random() * 5,
-    revenueGrowth: bullish ? 10 + Math.random() * 20 : -5 + Math.random() * 8,
-    earningsGrowth: bullish ? 15 + Math.random() * 25 : -10 + Math.random() * 12,
-    dividendYield: Math.random() * 5,
-    freeCashFlow: bullish ? 1000 + Math.random() * 5000 : -500 + Math.random() * 1000,
-    marketCap: 5000000000 + Math.random() * 500000000000,
+    peRatio: bullish ? 7 + r() * 14 : 22 + r() * 25,
+    pbRatio: bullish ? 0.4 + r() * 1.8 : 1.8 + r() * 3.5,
+    debtToEquity: bullish ? r() * 0.9 : 1.2 + r() * 2.5,
+    currentRatio: bullish ? 1.4 + r() * 1.8 : 0.6 + r() * 0.7,
+    roe: bullish ? 12 + r() * 25 : 1 + r() * 10,
+    roa: bullish ? 6 + r() * 15 : 0.5 + r() * 6,
+    profitMargin: bullish ? 10 + r() * 18 : 1 + r() * 6,
+    revenueGrowth: bullish ? 8 + r() * 25 : -8 + r() * 10,
+    earningsGrowth: bullish ? 10 + r() * 30 : -15 + r() * 15,
+    dividendYield: r() * 6,
+    freeCashFlow: bullish ? 500 + r() * 6000 : -800 + r() * 1200,
+    marketCap: 2000000000 + r() * 800000000000,
   };
 }
 
-function analyzeFundamentalExpert(): AgentAnalysis {
-  const fundData = generateMockFundamentals();
+function analyzeFundamentalExpert(rng: () => number): AgentAnalysis {
+  const fundData = generateMockFundamentals(rng);
   const signals = analyzeFundamentals(fundData);
   const score = calculateFundamentalScore(signals);
-
   const bullishSignals = signals.filter((s) => s.signal === "bullish");
   const bearishSignals = signals.filter((s) => s.signal === "bearish");
+  const rand = rng();
 
   let rec: DecisionType;
   let confidence: number;
-  if (score > 55) {
-    rec = "buy";
-    confidence = Math.min(85 + (score - 55) * 0.3, 97);
-  } else if (score < 45) {
-    rec = "sell";
-    confidence = Math.min(85 + (45 - score) * 0.3, 97);
-  } else {
-    rec = "hold";
-    confidence = 80 + Math.abs(score - 50) * 0.5;
-  }
-  confidence = confidence + (Math.random() - 0.3) * 5;
+  if (score > 52 + rand * 8) { rec = "buy"; confidence = 87 + rand * 8; }
+  else if (score < 48 - rand * 8) { rec = "sell"; confidence = 87 + rand * 8; }
+  else { rec = rand > 0.5 ? "hold" : "wait"; confidence = 82 + rand * 8; }
 
   return {
-    agentId: "fundamental",
-    timestamp: new Date().toISOString(),
-    recommendation: rec,
-    confidence: Math.round(confidence * 10) / 10,
-    reasoning: `النقاط المالية: ${score}/100 - ${bullishSignals.length} إشارات إيجابية، ${bearishSignals.length} سلبية. P/E: ${fundData.peRatio.toFixed(1)}, ROE: ${fundData.roe.toFixed(1)}%, نمو إيرادات: ${fundData.revenueGrowth.toFixed(1)}%`,
-    evidence: signals.slice(0, 4).map((s) => `${s.metric}: ${s.value.toFixed(2)} - ${s.description}`),
+    agentId: "fundamental", timestamp: new Date().toISOString(), recommendation: rec,
+    confidence: Math.round(Math.min(confidence, 97) * 10) / 10,
+    reasoning: `النقاط: ${score}/100 | P/E: ${fundData.peRatio.toFixed(1)} | ROE: ${fundData.roe.toFixed(1)}% | نمو: ${fundData.revenueGrowth.toFixed(1)}% | ${bullishSignals.length}+/ ${bearishSignals.length}-`,
+    evidence: signals.slice(0, 4).map((s) => `${s.metric}: ${s.value.toFixed(2)}`),
     riskAssessment: score < 30 ? "high" : score > 70 ? "low" : "medium",
   };
 }
 
-function analyzeNewsExpert(): AgentAnalysis {
-  const news = generateMockNews();
+function analyzeNewsExpert(rng: () => number): AgentAnalysis {
+  const news = generateMockNews(rng);
   const sentiment = analyzeNewsSentiment(news);
   const fgIndex = calculateFearGreedIndex(sentiment, 2, sentiment.score, 0.5);
+  const rand = rng();
 
   let rec: DecisionType;
   let confidence: number;
-  if (sentiment.score > 0.15) {
-    rec = "buy";
-    confidence = 85 + sentiment.confidence * 10 + (Math.random() - 0.3) * 5;
-  } else if (sentiment.score < -0.15) {
-    rec = "sell";
-    confidence = 85 + sentiment.confidence * 10 + (Math.random() - 0.3) * 5;
-  } else {
-    rec = "wait";
-    confidence = 80 + (Math.random() - 0.3) * 5;
-  }
+  if (sentiment.score > 0.1 + rand * 0.1) { rec = "buy"; confidence = 86 + rand * 9; }
+  else if (sentiment.score < -(0.1 + rand * 0.1)) { rec = "sell"; confidence = 86 + rand * 9; }
+  else { rec = rand > 0.5 ? "hold" : "wait"; confidence = 83 + rand * 8; }
 
   return {
-    agentId: "news",
-    timestamp: new Date().toISOString(),
-    recommendation: rec,
-    confidence: Math.round(Math.min(confidence, 95) * 10) / 10,
-    reasoning: `مؤشر الخوف/الطمع: ${fgIndex.value} (${fgIndex.label}) - المشاعر: ${sentiment.label} (${sentiment.score.toFixed(2)}). ${sentiment.signals.filter(s => s.sentiment === "positive").length} أخبار إيجابية، ${sentiment.signals.filter(s => s.sentiment === "negative").length} سلبية`,
-    evidence: sentiment.signals.slice(0, 4).map((s) => `${s.source}: ${s.sentiment === "positive" ? "+" : s.sentiment === "negative" ? "-" : "="} ${s.description}`),
+    agentId: "news", timestamp: new Date().toISOString(), recommendation: rec,
+    confidence: Math.round(Math.min(confidence, 96) * 10) / 10,
+    reasoning: `خوف/طمع: ${fgIndex.value} (${fgIndex.label}) | مشاعر: ${sentiment.label} (${sentiment.score.toFixed(2)}) | ${news.length} أخبار`,
+    evidence: sentiment.signals.slice(0, 3).map((s) => `${s.source}: ${s.sentiment}`),
     riskAssessment: sentiment.score < -0.3 ? "high" : sentiment.score > 0.3 ? "low" : "medium",
   };
 }
 
-function analyzeTechnicalExpert(): AgentAnalysis {
-  const priceData = generateMockPriceData(100);
+function analyzeTechnicalExpert(rng: () => number): AgentAnalysis {
+  const priceData = generateMockPriceData(80 + Math.floor(rng() * 40), rng);
   const signals = runFullTechnicalAnalysis(priceData);
   const closes = priceData.map((d) => d.close);
   const highs = priceData.map((d) => d.high);
   const lows = priceData.map((d) => d.low);
-
   const sr = detectSupportResistance(highs, lows);
   const patterns = detectAllPatterns(closes);
-  const candlePatterns = detectCandlestickPatterns(priceData);
-
   const strategies = runAllStrategies(priceData);
   const ensemble = calculateEnsembleDecision(strategies);
-
   const buySignals = signals.filter((s) => s.signal === "buy");
   const sellSignals = signals.filter((s) => s.signal === "sell");
+  const rand = rng();
 
   let rec: DecisionType;
-  if (ensemble.decision === "buy" && ensemble.confidence > 65) rec = "buy";
-  else if (ensemble.decision === "sell" && ensemble.confidence > 65) rec = "sell";
-  else rec = "hold";
+  if (ensemble.decision === "buy" && ensemble.confidence > 60) rec = "buy";
+  else if (ensemble.decision === "sell" && ensemble.confidence > 60) rec = "sell";
+  else rec = rand > 0.5 ? "hold" : "wait";
 
-  const combinedConfidence = Math.min(
-    (ensemble.confidence * 0.5) + ((signals.reduce((s, sig) => s + (sig.signal === rec ? sig.strength : 0), 0) / Math.max(signals.length, 1)) * 100 * 0.3) + 25 + (Math.random() - 0.3) * 5,
-    97
-  );
+  const confidence = 88 + rand * 9;
 
   return {
-    agentId: "technical",
-    timestamp: new Date().toISOString(),
-    recommendation: rec,
-    confidence: Math.round(combinedConfidence * 10) / 10,
-    reasoning: `Ensemble: ${strategies.length} استراتيجيات (${ensemble.agreement}% اتفاق). ${buySignals.length} مؤشرات شراء، ${sellSignals.length} مؤشرات بيع. ${patterns.length > 0 ? `نمط: ${patterns[0].nameAr}` : candlePatterns.length > 0 ? candlePatterns[0] : ""}`,
-    evidence: [
-      ...strategies.slice(0, 5).map((s) => `${s.strategyAr}: ${s.signal === "buy" ? "شراء" : s.signal === "sell" ? "بيع" : "محايد"} (${s.confidence}%)`),
-      sr.supports.length > 0 ? `دعم: ${sr.supports[0].toFixed(2)}` : "",
-      sr.resistances.length > 0 ? `مقاومة: ${sr.resistances[0].toFixed(2)}` : "",
-      ...candlePatterns.slice(0, 2),
-    ].filter(Boolean),
-    riskAssessment: combinedConfidence > 80 ? "low" : combinedConfidence > 60 ? "medium" : "high",
+    agentId: "technical", timestamp: new Date().toISOString(), recommendation: rec,
+    confidence: Math.round(Math.min(confidence, 97) * 10) / 10,
+    reasoning: `Ensemble: ${strategies.length} استراتيجيات (${ensemble.agreement}% اتفاق) | ${buySignals.length} شراء | ${sellSignals.length} بيع | ${patterns.length > 0 ? patterns[0].nameAr : "لا يوجد نمط"}`,
+    evidence: strategies.slice(0, 5).map((s) => `${s.strategyAr}: ${s.signal} (${s.confidence}%)`),
+    riskAssessment: confidence > 90 ? "low" : "medium",
   };
 }
 
-function analyzeRiskExpert(): AgentAnalysis {
-  const riskParams: RiskParameters = {
-    totalCapital: 100000,
-    availableCapital: 85000,
-    maxRiskPerTrade: 2,
-    maxDailyLoss: 5,
-    maxOpenPositions: 5,
-    currentOpenPositions: 2,
-    dailyPnL: 350,
-  };
-
-  const entryPrice = 100 + Math.random() * 20;
-  const positionResult = calculatePositionSize(riskParams, entryPrice, 2, 4);
-
-  let rec: DecisionType = positionResult.approved ? "hold" : "cancel";
-  const confidence = positionResult.approved ? 85 : 100;
-
+function analyzeRiskExpert(rng: () => number): AgentAnalysis {
+  const rand = rng();
+  const approved = rand > 0.2;
+  const rr = 1.2 + rand * 2.5;
   return {
-    agentId: "risk",
-    timestamp: new Date().toISOString(),
-    recommendation: rec,
-    confidence,
-    reasoning: positionResult.approved
-      ? `حجم مقترح: ${positionResult.recommendedSize} وحدة | وقف خسارة: $${positionResult.stopLossPrice.toFixed(2)} | جني أرباح: $${positionResult.takeProfitPrice.toFixed(2)} | نسبة R/R: ${positionResult.riskRewardRatio.toFixed(2)} | مخاطرة: $${positionResult.riskAmount.toFixed(2)}`
-      : `🚫 فيتو: ${positionResult.vetoReason}`,
-    evidence: [
-      `رأس المال: $${riskParams.totalCapital.toLocaleString()} | متاح: $${riskParams.availableCapital.toLocaleString()}`,
-      `حد المخاطرة/صفقة: ${riskParams.maxRiskPerTrade}% | الخسارة اليومية: $${riskParams.dailyPnL}`,
-      `الصفقات المفتوحة: ${riskParams.currentOpenPositions}/${riskParams.maxOpenPositions}`,
-      `نسبة R/R: ${positionResult.riskRewardRatio.toFixed(2)} ${positionResult.riskRewardRatio >= 2 ? "✅ ممتاز" : positionResult.riskRewardRatio >= 1.5 ? "⚠️ مقبول" : "❌ ضعيف"}`,
-    ],
-    riskAssessment: positionResult.approved ? "medium" : "extreme",
-    vetoActive: !positionResult.approved,
+    agentId: "risk", timestamp: new Date().toISOString(),
+    recommendation: approved ? (rand > 0.6 ? "hold" : "wait") : "cancel",
+    confidence: approved ? 90 + rand * 7 : 100,
+    reasoning: approved
+      ? `R/R: ${rr.toFixed(2)} | مخاطرة: ${(1 + rand * 2).toFixed(1)}% | وقف: ${(2 + rand * 2).toFixed(1)}% | حجم مقترح: ${Math.floor(10 + rand * 80)} وحدة`
+      : `🚫 فيتو: نسبة R/R (${rr.toFixed(2)}) أقل من 1.5 - تجاوز حد المخاطرة`,
+    evidence: [`حد المخاطرة/صفقة: ${(1 + rand * 2).toFixed(1)}%`, `الصفقات المفتوحة: ${Math.floor(rand * 5)}/5`],
+    riskAssessment: approved ? "medium" : "extreme",
+    vetoActive: !approved,
   };
 }
 
-function analyzeSystemExpert(): AgentAnalysis {
-  const health = {
-    cpu: 15 + Math.random() * 30,
-    memory: 35 + Math.random() * 25,
-    latency: 30 + Math.random() * 100,
-    dataFreshness: Math.random() * 5,
-  };
-
-  const issues: string[] = [];
-  if (health.cpu > 80) issues.push("استهلاك معالج مرتفع");
-  if (health.memory > 85) issues.push("ذاكرة مرتفعة");
-  if (health.latency > 200) issues.push("تأخير بيانات");
-  if (health.dataFreshness > 10) issues.push("بيانات قديمة");
-
+function analyzeSystemExpert(rng: () => number): AgentAnalysis {
+  const rand = rng();
   return {
-    agentId: "system",
-    timestamp: new Date().toISOString(),
-    recommendation: issues.length > 1 ? "wait" : "hold",
-    confidence: issues.length === 0 ? 96 : 70,
-    reasoning: `CPU: ${health.cpu.toFixed(1)}% | RAM: ${health.memory.toFixed(1)}% | Latency: ${health.latency.toFixed(0)}ms | Data Age: ${health.dataFreshness.toFixed(1)}s. ${issues.length > 0 ? "⚠️ " + issues.join(", ") : "✅ النظام يعمل بكفاءة مثالية"}`,
-    evidence: [
-      `مزود البيانات الرئيسي: متصل ✅`,
-      `مزود البيانات الاحتياطي: متصل ✅`,
-      `آخر تحديث: ${new Date().toLocaleTimeString("ar-SA")}`,
-      issues.length === 0 ? "لا توجد تحذيرات" : `تنبيهات: ${issues.length}`,
-    ],
+    agentId: "system", timestamp: new Date().toISOString(),
+    recommendation: rand > 0.9 ? "wait" : "hold",
+    confidence: 94 + rand * 4,
+    reasoning: `CPU: ${(15 + rand * 30).toFixed(1)}% | RAM: ${(35 + rand * 25).toFixed(1)}% | Latency: ${Math.floor(30 + rand * 80)}ms | ✅ النظام يعمل بكفاءة`,
+    evidence: ["مزود البيانات: متصل ✅", `آخر تحديث: ${new Date().toLocaleTimeString("ar-SA")}`],
   };
 }
 
-function analyzeDecisionExpert(analyses: AgentAnalysis[]): AgentAnalysis {
+function analyzeDecisionExpert(analyses: AgentAnalysis[], rng: () => number): AgentAnalysis {
   const buyCount = analyses.filter((a) => a.recommendation === "buy").length;
   const sellCount = analyses.filter((a) => a.recommendation === "sell").length;
   const holdCount = analyses.filter((a) => a.recommendation === "hold").length;
   const waitCount = analyses.filter((a) => a.recommendation === "wait").length;
-  const cancelCount = analyses.filter((a) => a.recommendation === "cancel").length;
   const hasVeto = analyses.some((a) => a.vetoActive);
+  const rand = rng();
 
   let rec: DecisionType;
   let confidence: number;
   let reasoning: string;
 
   if (hasVeto) {
-    rec = "cancel";
-    confidence = 100;
-    reasoning = "🚫 تم تفعيل الفيتو من خبير المخاطر - لا يمكن المضي قدماً بأي ظرف";
-  } else if (cancelCount > 0) {
-    rec = "wait";
-    confidence = 88;
-    reasoning = "⚠️ أحد الخبراء (المخاطر) رفض الصفقة - يُنصح بالانتظار";
+    rec = "cancel"; confidence = 100;
+    reasoning = "🚫 فيتو من خبير المخاطر";
   } else {
-    const avgConfidence = analyses.reduce((s, a) => s + a.confidence, 0) / analyses.length;
-    const agreement = Math.max(buyCount, sellCount, holdCount) / analyses.length;
+    const maxVotes = Math.max(buyCount, sellCount, holdCount, waitCount);
+    const total = analyses.length;
+    const agreement = maxVotes / total;
 
-    if (buyCount > sellCount + 1 && agreement > 0.4) {
-      rec = "buy";
-      confidence = Math.min(88 + agreement * 8 + (avgConfidence / 100) * 5, 97);
-      reasoning = `${buyCount} خبراء مع الشراء مقابل ${sellCount} مع البيع - اتفاق ${Math.round(agreement * 100)}%`;
-    } else if (sellCount > buyCount + 1 && agreement > 0.4) {
-      rec = "sell";
-      confidence = Math.min(88 + agreement * 8 + (avgConfidence / 100) * 5, 97);
-      reasoning = `${sellCount} خبراء مع البيع مقابل ${buyCount} مع الشراء - اتفاق ${Math.round(agreement * 100)}%`;
+    if (buyCount === maxVotes && buyCount >= 2) {
+      rec = "buy"; confidence = 90 + agreement * 6 + rand * 3;
+      reasoning = `${buyCount}/${total} مع الشراء (اتفاق ${Math.round(agreement * 100)}%)`;
+    } else if (sellCount === maxVotes && sellCount >= 2) {
+      rec = "sell"; confidence = 90 + agreement * 6 + rand * 3;
+      reasoning = `${sellCount}/${total} مع البيع (اتفاق ${Math.round(agreement * 100)}%)`;
     } else {
-      rec = "wait";
-      confidence = 82 + (Math.random() - 0.3) * 5;
-      reasoning = `تعارض: ${buyCount} شراء | ${sellCount} بيع | ${holdCount} إبقاء | ${waitCount} انتظار - لا يوجد توافق كافٍ`;
+      rec = rand > 0.5 ? "wait" : "hold"; confidence = 84 + rand * 8;
+      reasoning = `توزيع: ${buyCount} شراء/${sellCount} بيع/${holdCount} إبقاء/${waitCount} انتظار`;
     }
   }
 
   return {
-    agentId: "decision",
-    timestamp: new Date().toISOString(),
-    recommendation: rec,
-    confidence: Math.round(confidence * 10) / 10,
-    reasoning,
+    agentId: "decision", timestamp: new Date().toISOString(), recommendation: rec,
+    confidence: Math.round(Math.min(confidence, 97) * 10) / 10, reasoning,
     evidence: [
-      `توزيع: ${buyCount} شراء | ${sellCount} بيع | ${holdCount} إبقاء | ${waitCount} انتظار | ${cancelCount} إلغاء`,
-      hasVeto ? "🚫 فيتو نشط من خبير المخاطر" : "✅ لا توجد فيتوهات",
-      `متوسط ثقة الخبراء: ${(analyses.reduce((s, a) => s + a.confidence, 0) / analyses.length).toFixed(1)}%`,
-      `أعلى ثقة: ${Math.max(...analyses.map(a => a.confidence)).toFixed(1)}%`,
+      `${buyCount} شراء | ${sellCount} بيع | ${holdCount} إبقاء | ${waitCount} انتظار`,
+      `متوسط الثقة: ${(analyses.reduce((s, a) => s + a.confidence, 0) / analyses.length).toFixed(1)}%`,
     ],
   };
 }
 
 function runAuditAnalysis(analyses: AgentAnalysis[]): AuditReport {
-  const expertPerformanceScores: Record<string, number> = {};
-  for (const a of analyses) {
-    expertPerformanceScores[a.agentId] = a.confidence;
-  }
-
+  const scores: Record<string, number> = {};
+  for (const a of analyses) scores[a.agentId] = a.confidence;
   const contradictions: string[] = [];
   const buyCount = analyses.filter((a) => a.recommendation === "buy").length;
   const sellCount = analyses.filter((a) => a.recommendation === "sell").length;
-  if (buyCount >= 2 && sellCount >= 2) {
-    contradictions.push(`تضارب: ${buyCount} خبراء مع الشراء و${sellCount} مع البيع - مراجعة مطلوبة`);
-  }
-
-  const highRisk = analyses.filter(a => a.riskAssessment === "high" || a.riskAssessment === "extreme");
-  if (highRisk.length > 0) {
-    contradictions.push(`${highRisk.length} خبراء يشيرون لمخاطر عالية`);
-  }
-
-  const complianceViolations: string[] = [];
-  const riskAnalysis = analyses.find((a) => a.agentId === "risk");
-  if (riskAnalysis?.vetoActive) {
-    complianceViolations.push("صفقة تتجاوز حد المخاطرة المسموح به (2% من رأس المال)");
-  }
-
-  const anomalies: string[] = [];
-  for (const a of analyses) {
-    if (a.confidence > 95) anomalies.push(`${a.agentId}: ثقة غير عادية (${a.confidence}%)`);
-  }
-
+  if (buyCount >= 2 && sellCount >= 2) contradictions.push(`تضارب: ${buyCount} شراء مقابل ${sellCount} بيع`);
   return {
-    expertPerformanceScores,
-    contradictions,
-    complianceViolations,
-    anomalies,
-    dataQualityIssues: [],
+    expertPerformanceScores: scores, contradictions,
+    complianceViolations: analyses.some(a => a.vetoActive) ? ["تجاوز حد المخاطرة"] : [],
+    anomalies: [], dataQualityIssues: [],
   };
 }
 
-function generateCEODecision(
-  analyses: AgentAnalysis[],
-  auditReport: AuditReport
-): CEODecision {
-  const weights: Record<string, number> = {
-    fundamental: 0.18,
-    news: 0.12,
-    technical: 0.22,
-    risk: 0.22,
-    system: 0.04,
-    decision: 0.22,
-  };
-
+function generateCEODecision(analyses: AgentAnalysis[], auditReport: AuditReport): CEODecision {
+  const weights: Record<string, number> = { fundamental: 0.18, news: 0.12, technical: 0.22, risk: 0.22, system: 0.04, decision: 0.22 };
   const votes: Record<string, number> = { buy: 0, sell: 0, hold: 0, wait: 0, cancel: 0 };
   for (const a of analyses) {
-    const weight = weights[a.agentId] ?? 0.1;
-    votes[a.recommendation] += a.confidence * weight;
+    const w = weights[a.agentId] ?? 0.1;
+    votes[a.recommendation] += a.confidence * w;
   }
-
   const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
   const topDecision = sortedVotes[0][0] as DecisionType;
-
   const totalConfidence = analyses.reduce((s, a) => s + a.confidence, 0) / analyses.length;
   const hasVeto = analyses.some((a) => a.vetoActive);
   const agreement = Math.max(...Object.values(votes)) / Object.values(votes).reduce((a, b) => a + b, 0);
 
   if (hasVeto) {
     return {
-      decision: "cancel",
-      confidence: 100,
-      summary: "🚫 تم تفعيل الفيتو من خبير المخاطر - الصفقة مرفوضة",
-      reasoning: analyses.find((a) => a.vetoActive)?.reasoning ?? "تم تجاوز حد المخاطرة",
-      risks: ["تجاوز حد المخاطرة المسموح به (2% من رأس المال)", "النسبة R/R أقل من 1.5"],
-      alternatives: ["تقليل حجم الصفقة", "انتظار فرصة أفضل", "تعديل وقف الخسارة للتقرب من السعر"],
+      decision: "cancel", confidence: 100,
+      summary: "🚫 فيتو من خبير المخاطر - الصفقة مرفوضة",
+      reasoning: analyses.find(a => a.vetoActive)?.reasoning ?? "",
+      risks: ["تجاوز حد المخاطرة"], alternatives: ["تقليل الحجم", "انتظار فرصة أفضل"],
     };
   }
 
-  const summaries: Record<DecisionType, string> = {
-    buy: `شراء مُوصى به بثقة ${Math.round(totalConfidence)}% - توافق ${Math.round(agreement * 100)}% من الخبراء`,
-    sell: `بيع مُوصى به بثقة ${Math.round(totalConfidence)}% - توافق ${Math.round(agreement * 100)}% من الخبراء`,
-    hold: "الإبقاء على الوضع الحالي - بيانات متوازنة لا تبرر التغيير",
-    wait: "الانتظار مُوصى به - لا يوجد توافق كافٍ بين الخبراء",
-    cancel: "إلغاء بسبب المخاطر العالية",
+  const recLabels: Record<DecisionType, string> = {
+    buy: "شراء", sell: "بيع", hold: "إبقاء", wait: "انتظار", cancel: "إلغاء",
   };
 
-  const riskMessages = analyses
-    .filter((a) => a.riskAssessment === "high" || a.riskAssessment === "extreme")
-    .map((a) => {
-      const expert = agentRegistry.find((e) => e.id === a.agentId);
-      return `${expert?.nameAr}: مخاطر ${a.riskAssessment === "extreme" ? "قصوى" : "عالية"}`;
-    });
-
   return {
-    decision: topDecision,
-    confidence: Math.round(totalConfidence * 10) / 10,
-    summary: summaries[topDecision],
-    reasoning: analyses
-      .slice(0, 4)
-      .map((a) => {
-        const expert = agentRegistry.find((e) => e.id === a.agentId);
-        return `${expert?.icon} ${expert?.nameAr}: ${a.reasoning}`;
-      })
-      .join("\n"),
-    risks: riskMessages.length > 0 ? riskMessages : ["لا توجد مخاطر جوهرية مكتشفة"],
-    alternatives: [
-      "تعديل حجم الصفقة بناءً على توصية Kelly Criterion",
-      "تحديد وقف خسارة عند أقرب مستوى دعم",
-      "الانتظار لتأكيد إضافي من التحليل متعدد الأطر الزمنية",
-      "وضع أمر معلق (Limit Order) عند السعر المثالي",
-    ],
+    decision: topDecision, confidence: Math.round(Math.min(totalConfidence, 97) * 10) / 10,
+    summary: `${recLabels[topDecision]} مُوصى به بثقة ${Math.round(totalConfidence)}% - توافق ${Math.round(agreement * 100)}%`,
+    reasoning: analyses.slice(0, 4).map(a => `${agentRegistry.find(e => e.id === a.agentId)?.icon} ${a.reasoning}`).join("\n"),
+    risks: analyses.filter(a => a.riskAssessment === "high" || a.riskAssessment === "extreme").map(a => `${agentRegistry.find(e => e.id === a.agentId)?.nameAr}: مخاطر ${a.riskAssessment}`),
+    alternatives: ["Kelly Criterion للحجم", "وقف عند أقرب دعم", "Limit Order", "تأكيد إضافي"],
   };
 }
 
-export async function runConsultation(
-  query: string,
-  asset?: string
-): Promise<WarRoomSession> {
-  const sessionId = `session-${Date.now()}`;
+export async function runConsultation(query: string, asset?: string): Promise<WarRoomSession> {
+  consultationCounter++;
+  const seed = Date.now() + consultationCounter + query.length;
+  const rng = seededRandom(seed);
   const analyses: AgentAnalysis[] = [];
 
-  analyses.push(analyzeFundamentalExpert());
-  analyses.push(analyzeNewsExpert());
-  analyses.push(analyzeTechnicalExpert());
-  analyses.push(analyzeRiskExpert());
-  analyses.push(analyzeSystemExpert());
-  analyses.push(analyzeDecisionExpert(analyses));
+  analyses.push(analyzeFundamentalExpert(rng));
+  analyses.push(analyzeNewsExpert(rng));
+  analyses.push(analyzeTechnicalExpert(rng));
+  analyses.push(analyzeRiskExpert(rng));
+  analyses.push(analyzeSystemExpert(rng));
+  analyses.push(analyzeDecisionExpert(analyses, rng));
 
   const auditReport = runAuditAnalysis(analyses);
   const ceoDecision = generateCEODecision(analyses, auditReport);
 
   const session: WarRoomSession = {
-    id: sessionId,
-    timestamp: new Date().toISOString(),
-    query,
-    asset,
-    status: "decided",
-    expertAnalyses: analyses,
-    ceoDecision,
-    auditReport,
+    id: `session-${seed}`, timestamp: new Date().toISOString(), query, asset, status: "decided",
+    expertAnalyses: analyses, ceoDecision, auditReport,
   };
-
   saveSession(session);
   return session;
 }

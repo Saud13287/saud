@@ -13,24 +13,21 @@ export default function TradingViewTickerTape() {
     script.async = true;
     script.innerHTML = JSON.stringify({
       symbols: [
-        { proName: "FX_IDC:XAUUSD", title: "ذهب" },
-        { proName: "FX_IDC:XAGUSD", title: "فضة" },
-        { proName: "TVC:USOIL", title: "نفط WTI" },
-        { proName: "FX_IDC:EURUSD", title: "EUR/USD" },
-        { proName: "FX_IDC:GBPUSD", title: "GBP/USD" },
-        { proName: "FX_IDC:USDJPY", title: "USD/JPY" },
-        { proName: "FX_IDC:AUDUSD", title: "AUD/USD" },
-        { proName: "BITSTAMP:BTCUSD", title: "بيتكوين" },
-        { proName: "BITSTAMP:ETHUSD", title: "إيثريوم" },
-        { proName: "BINANCE:SOLUSDT", title: "سولانا" },
+        { proName: "COMEX:GC1!", title: "ذهب" },
+        { proName: "COMEX:SI1!", title: "فضة" },
+        { proName: "NYMEX:CL1!", title: "نفط" },
+        { proName: "OANDA:EURUSD", title: "EUR/USD" },
+        { proName: "OANDA:GBPUSD", title: "GBP/USD" },
+        { proName: "OANDA:USDJPY", title: "USD/JPY" },
+        { proName: "BITSTAMP:BTCUSD", title: "BTC" },
+        { proName: "BITSTAMP:ETHUSD", title: "ETH" },
+        { proName: "BINANCE:SOLUSDT", title: "SOL" },
         { proName: "SP:SPX", title: "S&P 500" },
-        { proName: "BLACKBULL:US30", title: "US30" },
-        { proName: "BLACKBULL:NAS100", title: "NAS100" },
-        { proName: "TVC:DXY", title: "دولار" },
+        { proName: "TVC:DXY", title: "DXY" },
       ],
       showSymbolLogo: true,
       colorTheme: "dark",
-      isTransparent: true,
+      isTransparent: false,
       displayMode: "adaptive",
       locale: "ar",
     });
@@ -38,5 +35,5 @@ export default function TradingViewTickerTape() {
     containerRef.current.appendChild(script);
   }, []);
 
-  return <div ref={containerRef} className="tradingview-widget-container" />;
+  return <div ref={containerRef} className="tradingview-widget-container" style={{ height: "44px" }} />;
 }

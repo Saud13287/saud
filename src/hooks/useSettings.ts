@@ -62,18 +62,27 @@ const DEFAULT_SETTINGS: AppSettings = {
   mobileMode: false,
   soundEnabled: true,
   theme: "dark",
-  accountBalance: 100000,
+  accountBalance: 1000,
   cooldownEnabled: true,
 };
 
-const STORAGE_KEY = "saud-fin-settings";
+const SETTINGS_VERSION = "v2";
+const STORAGE_KEY = `saud-fin-${SETTINGS_VERSION}`;
 
 function loadSettings(): AppSettings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+      const parsed = JSON.parse(stored);
+      const merged = { ...DEFAULT_SETTINGS, ...parsed };
+      merged.accountBalance = Math.max(100, merged.accountBalance || 1000);
+      return merged;
+    }
+    // Try old key and migrate
+    const oldKey = localStorage.getItem("saud-fin-settings");
+    if (oldKey) {
+      localStorage.removeItem("saud-fin-settings");
     }
   } catch {
     // Use defaults
@@ -88,6 +97,7 @@ export function useSettings() {
   const updateSettings = useCallback((updates: Partial<AppSettings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...updates };
+      if (next.accountBalance < 100) next.accountBalance = 100;
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       } catch {
