@@ -1,23 +1,18 @@
-# Project Brief: Next.js Starter Template
+# Project Brief: OmegaFin Autonomous Intelligence System
 
 ## Purpose
 
-This is a minimal Next.js starter template designed for AI-assisted development. It provides a clean foundation that can be extended to build any type of web application through interaction with an AI assistant.
+OmegaFin is a comprehensive AI-powered investment company simulation system. It simulates a full investment company operating within a web interface, where 48 intelligent agents (8 main experts + 40 assistants) collaborate to analyze markets and make investment recommendations.
 
 ## Target Users
 
-- Developers wanting a clean Next.js starting point
-- Users building applications through AI-assisted coding
-- Teams needing a standardized, modern Next.js setup
+- Individual investors seeking AI-powered analysis
+- Traders wanting multi-perspective market analysis
+- Financial enthusiasts exploring AI-driven decision making
 
 ## Core Use Case
 
-Users describe what they want to build to an AI assistant, which then expands this template by:
-
-1. Adding components and pages as needed
-2. Installing additional dependencies
-3. Setting up databases, authentication, etc. using recipes
-4. Customizing styling and branding
+Users query the system about investment decisions (e.g., "Should I buy gold now?"). The system activates a virtual "war room" where all 48 expert agents analyze the question from different angles, debate, and produce a unified recommendation through weighted voting under CEO supervision.
 
 ## Key Requirements
 
@@ -25,24 +20,33 @@ Users describe what they want to build to an AI assistant, which then expands th
 
 - Modern Next.js 16 setup with App Router
 - TypeScript for type safety
-- Tailwind CSS 4 for styling
-- ESLint for code quality
-- Clean, minimal starting structure
-- Bun as package manager
+- Tailwind CSS 4 for styling with dark theme
+- Arabic RTL interface
+- 8 main expert agents with distinct roles
+- 40 assistant agents with specialized functions
+- War room consultation system
+- Risk management with veto capability
+- Self-learning engine with accuracy tracking
+- Knowledge base for market patterns
 
 ### Nice to Have
 
-- Recipe system for common additions (database, auth)
-- Memory bank for AI context persistence
-- Clear development guidelines
+- Ghost mode for paper trading
+- Voice consultation interface
+- Real-time market data integration
+- Broker API connectivity
+- Crisis detection system
 
 ## Success Metrics
 
-- Clean, zero-error TypeScript setup
-- Passing lint and type checks
+- All 48 agents properly defined and functional
+- War room produces coherent multi-perspective analysis
+- Risk management enforces limits correctly
+- Arabic interface renders correctly in RTL
 
 ## Constraints
 
-- Minimal dependencies by default
-- Framework: Next.js 16 + React 19 + Tailwind CSS 4
+- Simulation mode (no real trading)
+- Next.js 16 + React 19 + Tailwind CSS 4
 - Package manager: Bun
+- No external API keys required for demo

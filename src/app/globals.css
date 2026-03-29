@@ -1,1 +1,97 @@
 @import "tailwindcss";
+
+@theme {
+  --color-omega-bg: #0a0e17;
+  --color-omega-surface: #111827;
+  --color-omega-card: #1a2332;
+  --color-omega-border: #1e293b;
+  --color-omega-accent: #3b82f6;
+  --color-omega-gold: #f59e0b;
+  --color-omega-green: #10b981;
+  --color-omega-red: #ef4444;
+  --color-omega-purple: #8b5cf6;
+  --color-omega-text: #e2e8f0;
+  --color-omega-muted: #94a3b8;
+  --font-family-arabic: "Segoe UI", "Noto Sans Arabic", "Tahoma", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  font-family: var(--font-family-arabic);
+  background: var(--color-omega-bg);
+  color: var(--color-omega-text);
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-omega-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-omega-border);
+  border-radius: 3px;
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.gradient-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-idle { background: #64748b; }
+.status-analyzing { background: #3b82f6; animation: pulse 1.5s infinite; }
+.status-debating { background: #f59e0b; animation: pulse 1s infinite; }
+.status-completed { background: #10b981; }
+.status-error { background: #ef4444; }
+.status-vetoed { background: #ef4444; animation: pulse 0.5s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
