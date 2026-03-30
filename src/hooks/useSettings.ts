@@ -15,6 +15,7 @@ export interface AppSettings {
   tradingHours: string;
   notificationsEnabled: boolean;
   brokerType: string;
+  selectedBroker: string;
   maxSlippage: number;
   language: string;
   chartSymbol: string;
@@ -27,9 +28,16 @@ export interface AppSettings {
   enableFOMODetection: boolean;
   mobileMode: boolean;
   soundEnabled: boolean;
+  alertSound: boolean;
   theme: string;
   accountBalance: number;
   cooldownEnabled: boolean;
+  manualCloseEnabled: boolean;
+  stopLossPercent: number;
+  takeProfitPercent: number;
+  tradeSizePercent: number;
+  allowedAssets: string[];
+  requireConfirmation: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -45,10 +53,12 @@ const DEFAULT_SETTINGS: AppSettings = {
   selectedStrategies: [
     "Ichimoku", "Fibonacci", "SMC", "VWAP", "Elliott Wave",
     "MACD", "RSI", "Bollinger Bands", "Stochastic", "Ensemble Voting",
+    "ICT", "CRT", "Liquidity Sweep", "Order Block",
   ],
   tradingHours: "all",
   notificationsEnabled: true,
   brokerType: "demo",
+  selectedBroker: "",
   maxSlippage: 0.1,
   language: "ar",
   chartSymbol: "COMEX:GC1!",
@@ -61,12 +71,19 @@ const DEFAULT_SETTINGS: AppSettings = {
   enableFOMODetection: true,
   mobileMode: false,
   soundEnabled: true,
+  alertSound: true,
   theme: "dark",
   accountBalance: 1000,
   cooldownEnabled: true,
+  manualCloseEnabled: true,
+  stopLossPercent: 2,
+  takeProfitPercent: 4,
+  tradeSizePercent: 2,
+  allowedAssets: ["XAUUSD", "EURUSD", "GBPUSD", "BTCUSD", "ETHUSD"],
+  requireConfirmation: true,
 };
 
-const SETTINGS_VERSION = "v2";
+const SETTINGS_VERSION = "v3";
 const STORAGE_KEY = `saud-fin-${SETTINGS_VERSION}`;
 
 function loadSettings(): AppSettings {
@@ -79,14 +96,7 @@ function loadSettings(): AppSettings {
       merged.accountBalance = Math.max(100, merged.accountBalance || 1000);
       return merged;
     }
-    // Try old key and migrate
-    const oldKey = localStorage.getItem("saud-fin-settings");
-    if (oldKey) {
-      localStorage.removeItem("saud-fin-settings");
-    }
-  } catch {
-    // Use defaults
-  }
+  } catch {}
   return DEFAULT_SETTINGS;
 }
 
@@ -98,22 +108,14 @@ export function useSettings() {
     setSettings((prev) => {
       const next = { ...prev, ...updates };
       if (next.accountBalance < 100) next.accountBalance = 100;
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // Storage full or disabled
-      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
   }, []);
 
   const resetSettings = useCallback(() => {
     setSettings(DEFAULT_SETTINGS);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SETTINGS));
-    } catch {
-      // ignore
-    }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SETTINGS)); } catch {}
   }, []);
 
   return { settings, updateSettings, resetSettings, loaded };

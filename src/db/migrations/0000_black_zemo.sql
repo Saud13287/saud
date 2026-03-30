@@ -1,3 +1,23 @@
+CREATE TABLE `backtest_results` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`user_id` integer,
+	`strategy` text NOT NULL,
+	`asset` text NOT NULL,
+	`timeframe` text NOT NULL,
+	`total_trades` integer DEFAULT 0,
+	`win_rate` real DEFAULT 0,
+	`total_return` real DEFAULT 0,
+	`max_drawdown` real DEFAULT 0,
+	`sharpe_ratio` real DEFAULT 0,
+	`profit_factor` real DEFAULT 0,
+	`avg_win` real DEFAULT 0,
+	`avg_loss` real DEFAULT 0,
+	`best_trade` real DEFAULT 0,
+	`worst_trade` real DEFAULT 0,
+	`created_at` integer,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `copy_trades` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer,
@@ -25,8 +45,22 @@ CREATE TABLE `expert_performance` (
 	`accuracy` real DEFAULT 0,
 	`total_pnl` real DEFAULT 0,
 	`avg_confidence` real DEFAULT 0,
+	`win_streak` integer DEFAULT 0,
+	`loss_streak` integer DEFAULT 0,
 	`period` text NOT NULL,
 	`created_at` integer
+);
+--> statement-breakpoint
+CREATE TABLE `notifications` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`user_id` integer,
+	`type` text NOT NULL,
+	`title` text NOT NULL,
+	`message` text NOT NULL,
+	`sound` integer DEFAULT true,
+	`read` integer DEFAULT false,
+	`created_at` integer,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `portfolio_snapshots` (
@@ -49,6 +83,7 @@ CREATE TABLE `price_alerts` (
 	`target_price` real NOT NULL,
 	`condition` text NOT NULL,
 	`message` text,
+	`sound_enabled` integer DEFAULT true,
 	`triggered` integer DEFAULT false,
 	`triggered_at` integer,
 	`created_at` integer,
@@ -62,6 +97,7 @@ CREATE TABLE `strategies` (
 	`name_ar` text NOT NULL,
 	`description` text,
 	`rules` text NOT NULL,
+	`category` text DEFAULT 'custom',
 	`is_active` integer DEFAULT true,
 	`total_trades` integer DEFAULT 0,
 	`win_rate` real DEFAULT 0,
@@ -83,8 +119,9 @@ CREATE TABLE `trades` (
 	`pnl_percent` real DEFAULT 0,
 	`status` text DEFAULT 'open',
 	`expert` text,
-	`confidence` real DEFAULT 0,
 	`strategy` text,
+	`broker` text,
+	`confidence` real DEFAULT 0,
 	`notes` text,
 	`currency` text DEFAULT 'USD',
 	`created_at` integer,
@@ -97,8 +134,11 @@ CREATE TABLE `users` (
 	`email` text NOT NULL,
 	`password_hash` text NOT NULL,
 	`display_name` text NOT NULL,
+	`role` text DEFAULT 'trader',
 	`preferred_currency` text DEFAULT 'USD',
 	`account_balance` real DEFAULT 1000,
+	`is_active` integer DEFAULT true,
+	`last_login` integer,
 	`created_at` integer,
 	`updated_at` integer
 );
@@ -113,6 +153,7 @@ CREATE TABLE `war_room_sessions` (
 	`confidence` real DEFAULT 0,
 	`expert_votes` text,
 	`summary` text,
+	`strategy` text,
 	`executed` integer DEFAULT false,
 	`created_at` integer,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action

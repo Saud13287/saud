@@ -17,6 +17,7 @@ const navItems = [
   { href: "/backtesting", label: "الاختبار الخلفي", icon: "📐", desc: "Backtesting" },
   { href: "/reports", label: "التقارير", icon: "📋", desc: "الأداء" },
   { href: "/auth", label: "الحساب", icon: "👤", desc: "تسجيل الدخول" },
+  { href: "/admin", label: "لوحة الإدارة", icon: "👑", desc: "إدارة المستخدمين" },
   { href: "/settings", label: "الإعدادات", icon: "⚙️", desc: "التخصيص" },
 ];
 
@@ -93,7 +94,7 @@ export default function Sidebar() {
             <span className="text-xs font-medium">النظام يعمل</span>
           </div>
           <div className="flex items-center justify-between text-[10px] text-[var(--color-omega-muted)]">
-            <span>v8.0 | سعود</span>
+            <span>v10.0 | سعود</span>
             <span>السوق: نشط</span>
           </div>
         </div>
