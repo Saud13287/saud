@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { db, isDbAvailable } from "@/db";
+import { db } from "@/db";
 import { priceAlerts } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export async function GET(request: Request) {
-  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة", alerts: [] }, { status: 503 });
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
@@ -22,7 +21,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة" }, { status: 503 });
   try {
     const body = await request.json();
     const { userId, asset, targetPrice, condition, message } = body;
@@ -47,7 +45,6 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة" }, { status: 503 });
   try {
     const body = await request.json();
     const { alertId } = body;
@@ -63,7 +60,6 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة" }, { status: 503 });
   try {
     const { searchParams } = new URL(request.url);
     const alertId = searchParams.get("id");

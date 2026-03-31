@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
-import { db, isDbAvailable } from "@/db";
+import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword, generateToken, ADMIN_EMAIL } from "@/lib/auth";
 
 export async function POST(request: Request) {
-  if (!isDbAvailable()) {
-    return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة. يرجى التأكد من إعداد المتغيرات البيئية DB_URL و DB_TOKEN." }, { status: 503 });
-  }
   try {
     const body = await request.json();
     const { action, email, password, displayName, token, userId, role } = body;
