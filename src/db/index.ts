@@ -1,17 +1,24 @@
+import { createDatabase } from "@kilocode/app-builder-db";
 import * as schema from "./schema";
 
-let _db: ReturnType<typeof import("@kilocode/app-builder-db").createDatabase> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _db: any = null;
 
 export function getDb() {
   if (!_db) {
-    const { createDatabase } = require("@kilocode/app-builder-db");
     _db = createDatabase(schema);
   }
   return _db;
 }
 
-export const db = new Proxy({} as ReturnType<typeof import("@kilocode/app-builder-db").createDatabase>, {
+// Lazy proxy - only initializes DB when actually used
+export const db = new Proxy({} as ReturnType<typeof createDatabase>, {
   get(_target, prop) {
-    return (getDb() as unknown as Record<string, unknown>)[prop as string];
+    const database = getDb();
+    const value = database[prop as keyof typeof database];
+    if (typeof value === "function") {
+      return value.bind(database);
+    }
+    return value;
   },
 });
