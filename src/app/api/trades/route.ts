@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, isDbAvailable } from "@/db";
 import { trades } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export async function GET(request: Request) {
+  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة" }, { status: 503 });
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
@@ -22,6 +23,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة" }, { status: 503 });
   try {
     const body = await request.json();
     const { userId, asset, direction, entryPrice, quantity, stopLoss, takeProfit, expert, confidence, strategy, currency } = body;
@@ -50,6 +52,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة" }, { status: 503 });
   try {
     const body = await request.json();
     const { tradeId, exitPrice, pnl, pnlPercent, status } = body;

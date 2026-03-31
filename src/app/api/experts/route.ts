@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, isDbAvailable } from "@/db";
 import { expertPerformance } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 export async function GET() {
+  if (!isDbAvailable()) return NextResponse.json({ error: "قاعدة البيانات غير مُعدّة", experts: [] }, { status: 503 });
   try {
     const result = await db.select().from(expertPerformance).orderBy(desc(expertPerformance.accuracy));
     return NextResponse.json({ success: true, experts: result });
